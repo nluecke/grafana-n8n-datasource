@@ -89,9 +89,11 @@ jobs:
             echo "has-e2e=true" >> $GITHUB_OUTPUT
           fi
 
+      # Community signing only works after the plugin is approved for the catalog.
+      # Enable with the repository variable SIGN_PLUGIN=true (gh variable set SIGN_PLUGIN --body true).
       - name: Sign plugin
         run: npm run sign
-        if: ${{ env.GRAFANA_ACCESS_POLICY_TOKEN != '' }}
+        if: ${{ vars.SIGN_PLUGIN == 'true' && env.GRAFANA_ACCESS_POLICY_TOKEN != '' }}
 
       - name: Get plugin metadata
         id: metadata

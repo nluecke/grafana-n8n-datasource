@@ -11,7 +11,7 @@
     "lint:fix": "npm run lint -- --fix && prettier --write --list-different .",
     "e2e": "playwright test",
     "server": "docker compose up --build",
-    "sign": "sign-plugin --rootUrls https://nluecke.grafana.net"
+    "sign": "sign-plugin"
   },
   "author": "Niklas Luecke",
   "license": "Apache-2.0",
