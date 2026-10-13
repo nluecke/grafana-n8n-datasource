@@ -26,3 +26,14 @@ Overall: `schema.RunPluginTests` is easy to adopt (one test function, eight chec
   `DataSourceInstanceSettings.HTTPClientOptions` handle TLS and PDC without extra code.
 - `SecureValuesMatchLoadSettings` keeps the `SecureKeys` list honest; we export it from the settings package
   so the loader and the test share one list.
+
+## Update 2026-10-13: a schema consumer exists in @grafana/plugin-ui
+
+`@grafana/plugin-ui` 0.17.6 contains `fetchConfigSchema(pluginType)` and `DatasourceConfigWizard`. The schema is
+loaded from `public/plugins/{pluginType}/schema/dsconfig.json`, i.e. exactly the file `PUBLISH-SCHEMA.md` (Change 5)
+copies into the plugin build. So the README statement "no React UI renderer" is outdated.
+
+| #   | Type    | Finding                                                                                                                                                                                | Proposal                                                                                                                       |
+| --- | ------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| 10  | docs    | Neither the dsconfig README nor `PUBLISH-SCHEMA.md` mention that `@grafana/plugin-ui` consumes the published schema (`DatasourceConfigWizard`), nor which fields/UI hints it supports. | Link the consumer from the dsconfig README and document the supported subset (`ui.component`, `groups`, `dependsOn`, secrets). |
+| 11  | feature | `role: auth.apiKey.value` plus a fixed header name would let the wizard render API-key auth for plugins like this one without a hand-written editor (see #5).                          | Same as #5.                                                                                                                    |

@@ -44,6 +44,9 @@ bundled dashboard.
 Steps 1–2 use n8n's internal REST API (`/rest/owner/setup`, `/rest/login`, `/rest/api-keys`), which may
 change between n8n versions. Generate load with `N=5000 TARGET=local scripts/probe/webhook-load.sh`.
 
+`make pdc` starts the same stack plus a SOCKS5 proxy with Grafana configured like Grafana Cloud with Private
+Data Source Connect, to test the PDC switch locally.
+
 Other targets: `make down` (keep data), `make clean` (delete data), `make logs`, `make dashboard`
 (regenerate `src/dashboards/n8n-workflow-executions.json`).
 

@@ -17,13 +17,13 @@ Grafana Cloud stack `nluecke.grafana.net`, later in the public catalog. Grafana 
 Goal: run the plugin on `https://nluecke.grafana.net` without a public catalog listing, to complete the
 Grafana Cloud row of the test matrix.
 
-1. [ ] **Clarify first** whether a Grafana Cloud stack can install privately signed plugins and how (upload /
-       private plugin catalog). The signing docs do not cover this; check the Grafana Cloud plugin documentation
-       or ask Grafana support.
-2. [ ] Create an access policy token on grafana.com in the `nluecke` organisation: realm = the organisation,
+1. [x] **Clarified 2026-10-13:** the Grafana Cloud stack offers no way to install an "offline" (uploaded) plugin.
+       The private signature is therefore only useful for self-hosted Grafana instances listed in `--rootUrls`;
+       for `nluecke.grafana.net` the plugin has to come from the catalog (see "Public catalog" below).
+2. [x] Create an access policy token on grafana.com in the `nluecke` organisation: realm = the organisation,
        scope `plugins:write`. Store it only as repository secret `GRAFANA_ACCESS_POLICY_TOKEN`
        (`gh secret set GRAFANA_ACCESS_POLICY_TOKEN`) or as a local environment variable, never in the repository.
-3. [ ] Sign: `npm run sign` signs for `https://nluecke.grafana.net` (`--rootUrls` in `package.json`; the value
+3. [x] Sign: `npm run sign` signs for `https://nluecke.grafana.net` (`--rootUrls` in `package.json`; the value
        must match Grafana's `root_url`; add further URLs comma-separated). The CI workflow runs the same step
        automatically once the secret exists, so the build artifact is signed. Re-sign every version.
        Locally: `mage -v && npm run build && GRAFANA_ACCESS_POLICY_TOKEN=… npm run sign` → `dist/MANIFEST.txt`.
@@ -31,7 +31,9 @@ Grafana Cloud row of the test matrix.
 5. [ ] Install on `nluecke.grafana.net` (way from step 1), then test:
    - [ ] data source against n8n reachable from Grafana Cloud (n8n Cloud, or a self-hosted n8n with public URL),
    - [ ] self-hosted n8n on a private network via Private Data Source Connect (PDC agent next to n8n,
-         _Private data source connect_ enabled in the data source's Advanced section),
+         _Private data source connect_ enabled under _Additional settings_). Verified locally with `make pdc`;
+         for a test on Grafana Cloud before release, Grafana asks plugin authors to contact
+         `integrations+pdc@grafana.com` with plugin version and stack,
    - [ ] import the dashboard from the data source's _Dashboards_ tab,
    - [ ] one alert rule on the error rate (`executionStats`, metric `errorRate`, bucket `range`).
 6. [ ] Record results in `docs/poc-findings.md` (Phase 7 matrix).

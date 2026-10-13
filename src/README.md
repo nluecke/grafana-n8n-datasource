@@ -50,7 +50,7 @@ Recent n8n versions enforce these scopes on every edition. The plugin itself onl
 | With CA cert / CA cert      | Verify against a custom CA, e.g. an internal PKI.                                                                                                                                                 |
 | Max pages                   | Upper limit of API pages (250 executions each) per query. Default 20, range 1–100.                                                                                                                |
 | Cache TTL                   | Seconds API responses are cached in the backend. Default 60, 0 disables caching.                                                                                                                  |
-| Private data source connect | Grafana Cloud only: reach n8n on a private network through a PDC agent. Shown when PDC is enabled in Grafana.                                                                                     |
+| Private data source connect | Grafana Cloud: reach a self-hosted n8n on a private network through a PDC agent. Shown under _Additional settings_ when PDC is enabled for the stack.                                             |
 
 **Save & test** checks the connection and reports whether the n8n version supports the server-side time
 filter. Typical messages:
@@ -98,9 +98,12 @@ Success rate = success / (success + error + crashed). Running, waiting and cance
 - **Workflows that do not save successful executions** (workflow setting, or `EXECUTIONS_DATA_SAVE_ON_SUCCESS=none`
   for the whole instance) make counts and success rates too low. The plugin warns for affected workflows;
   the instance-wide setting cannot be detected through the API.
-- **Data volume:** every query loads the executions of its time range, 250 per request, up to _Max pages_.
-  If the limit is reached the panel shows "Result truncated". Narrow the time range or the filters, or raise
-  _Max pages_. Multiple selected statuses or workflows are filtered in the plugin after loading.
+- **Data volume:** every query loads the executions of its time range, 250 per request, up to _Max pages_
+  (default 20 = 5,000 executions). Selected statuses and workflows are requested separately and filtered by n8n,
+  so filtered panels (e.g. failed executions) stay complete on busy instances. If the limit is reached, the panel
+  shows a warning icon with **"Incomplete data"**: how many executions were loaded, which part of the time range
+  they cover, and how to fix it. Clicking the icon opens the data source settings, where you raise _Max pages_
+  (up to 100). Alternatively narrow the time range or filters, or use the Insights query for totals.
 - **Older n8n versions** have no server-side time filter; the plugin then pages from the newest execution
   backwards until the start of the time range, which needs more requests for ranges in the past.
 - **Insights** cover all workflows of the instance (or a project), are updated hourly, and their allowed
