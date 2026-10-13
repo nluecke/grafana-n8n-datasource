@@ -71,6 +71,8 @@ def timeseries(title, x, y, w, h, targets, unit="short", draw="line", stack=Fals
     return {
         "type": "timeseries", "id": pid(), "title": title, "description": description, "datasource": DS,
         "gridPos": {"h": h, "w": w, "x": x, "y": y},
+        # About 100 buckets per panel: 2 h -> ~1 min, 24 h -> ~15 min. Finer buckets only show 0/1 stripes.
+        "maxDataPoints": 100,
         "targets": targets,
         "fieldConfig": {
             "defaults": {

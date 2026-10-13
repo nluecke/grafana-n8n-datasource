@@ -507,6 +507,7 @@
         "x": 0,
         "y": 5
       },
+      "maxDataPoints": 100,
       "targets": [
         {
           "refId": "A",
@@ -688,6 +689,7 @@
         "x": 12,
         "y": 5
       },
+      "maxDataPoints": 100,
       "targets": [
         {
           "refId": "A",
@@ -886,6 +888,7 @@
         "x": 12,
         "y": 15
       },
+      "maxDataPoints": 100,
       "targets": [
         {
           "refId": "A",
@@ -1221,6 +1224,7 @@
         "x": 0,
         "y": 39
       },
+      "maxDataPoints": 100,
       "targets": [
         {
           "refId": "A",
