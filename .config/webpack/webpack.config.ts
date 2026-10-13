@@ -6,7 +6,6 @@
  */
 
 import CopyWebpackPlugin from 'copy-webpack-plugin';
-import ESLintPlugin from 'eslint-webpack-plugin';
 import ForkTsCheckerWebpackPlugin from 'fork-ts-checker-webpack-plugin';
 import path from 'path';
 import ReplaceInFileWebpackPlugin from 'replace-in-file-webpack-plugin';
@@ -209,11 +208,8 @@ const config = async (env: Env): Promise<Configuration> => {
               },
               typescript: { configFile: path.join(process.cwd(), 'tsconfig.json') },
             }),
-            new ESLintPlugin({
-              extensions: ['.ts', '.tsx'],
-              lintDirtyModulesOnly: Boolean(env.development), // don't lint on start, only lint changed files
-              failOnError: Boolean(env.production),
-            }),
+            // eslint-webpack-plugin removed (project change): it depends on micromatch/braces,
+            // which fails the plugin validator (GHSA-vfj7-8cjw-p6xm). Linting runs via `npm run lint` in CI.
           ]
         : []),
     ],
