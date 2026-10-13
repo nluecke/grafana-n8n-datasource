@@ -119,6 +119,19 @@ func NewClient(baseURL, apiKey string, httpClient *http.Client, opts ...Options)
 	}
 }
 
+type noCacheKey struct{}
+
+// WithoutCache returns a context for which GET requests bypass the response cache,
+// e.g. for health checks that must test the live connection.
+func WithoutCache(ctx context.Context) context.Context {
+	return context.WithValue(ctx, noCacheKey{}, true)
+}
+
+func cacheDisabled(ctx context.Context) bool {
+	v, _ := ctx.Value(noCacheKey{}).(bool)
+	return v
+}
+
 // Get performs an allowlisted, cached GET request and decodes the JSON body into out.
 func (c *Client) Get(ctx context.Context, path string, query url.Values, out any) error {
 	return c.do(ctx, http.MethodGet, path, query, out)
@@ -140,7 +153,7 @@ func (c *Client) do(ctx context.Context, method, path string, query url.Values, 
 		u += "?" + query.Encode()
 	}
 
-	cacheable := method == http.MethodGet
+	cacheable := method == http.MethodGet && !cacheDisabled(ctx)
 	if cacheable {
 		if body, ok := c.cache.get(u); ok {
 			return decode(body, out)

@@ -50,6 +50,7 @@ func newTestDatasource(t *testing.T, url string, jsonData map[string]any, secure
 	require.NoError(t, err)
 	inst, err := NewDatasource(context.Background(), backend.DataSourceInstanceSettings{
 		Type:                    "nluecke-n8n-datasource",
+		UID:                     "test-uid",
 		URL:                     url,
 		JSONData:                raw,
 		DecryptedSecureJSONData: secure,
@@ -149,4 +150,20 @@ func TestCheckHealthUnreachable(t *testing.T) {
 	res := checkHealth(t, newTestDatasource(t, url+"/api/v1", nil, map[string]string{"apiKey": testAPIKey}))
 	require.Equal(t, backend.HealthStatusError, res.Status)
 	require.Contains(t, res.Message, "Cannot reach n8n")
+	require.Contains(t, res.Message, "use a public URL or Private Data Source Connect")
+
+	// With PDC enabled (but not configured in Grafana, so the request goes direct)
+	// the message points to the PDC agent instead.
+	res = checkHealth(t, newTestDatasource(t, url+"/api/v1", map[string]any{"enableSecureSocksProxy": true}, map[string]string{"apiKey": testAPIKey}))
+	require.Contains(t, res.Message, "through Private Data Source Connect")
+}
+
+// A health check must test the live connection, not a cached answer.
+func TestCheckHealthIgnoresCache(t *testing.T) {
+	srv := httptest.NewServer(fakeN8n{})
+	ds := newTestDatasource(t, srv.URL+"/api/v1", map[string]any{"cacheTtlSeconds": 600}, map[string]string{"apiKey": testAPIKey})
+	require.Equal(t, backend.HealthStatusOk, checkHealth(t, ds).Status)
+	srv.Close()
+	res := checkHealth(t, ds)
+	require.Equal(t, backend.HealthStatusError, res.Status, res.Message)
 }

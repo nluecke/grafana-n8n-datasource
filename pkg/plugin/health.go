@@ -23,12 +23,12 @@ func (d *Datasource) CheckHealth(ctx context.Context, _ *backend.CheckHealthRequ
 		return healthError(d.settingsErr.Error()), nil
 	}
 
-	ctx, cancel := context.WithTimeout(ctx, healthTimeout)
+	ctx, cancel := context.WithTimeout(n8n.WithoutCache(ctx), healthTimeout)
 	defer cancel()
 
 	err := d.client.Get(ctx, "/workflows", url.Values{"limit": {"1"}}, nil)
 	if err != nil {
-		return healthError(describeHealthError(err, d.settings.URL)), nil
+		return healthError(describeHealthError(err, d.settings.URL, d.settings.EnableSecureSocksProxy)), nil
 	}
 
 	msg := "Connected to the n8n API."
@@ -54,7 +54,7 @@ func healthError(msg string) *backend.CheckHealthResult {
 	return &backend.CheckHealthResult{Status: backend.HealthStatusError, Message: msg}
 }
 
-func describeHealthError(err error, baseURL string) string {
+func describeHealthError(err error, baseURL string, viaPDC bool) string {
 	var apiErr *n8n.APIError
 	if errors.As(err, &apiErr) {
 		switch apiErr.StatusCode {
@@ -96,6 +96,10 @@ func describeHealthError(err error, baseURL string) string {
 
 	var netErr net.Error
 	var urlErr *url.Error
+	if viaPDC && (errors.As(err, &netErr) || errors.As(err, &urlErr)) {
+		return "Cannot reach n8n through Private Data Source Connect: " + err.Error() +
+			". Check that the PDC agent is running and can reach the n8n URL from its network."
+	}
 	if errors.As(err, &netErr) || errors.As(err, &urlErr) {
 		return "Cannot reach n8n: " + err.Error() +
 			". Grafana Cloud cannot reach hosts on private networks; use a public URL or Private Data Source Connect."

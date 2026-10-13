@@ -189,3 +189,13 @@ func TestAuditEmptyArray(t *testing.T) {
 	require.NoError(t, err)
 	require.Empty(t, reports)
 }
+
+func TestWithoutCacheBypassesCache(t *testing.T) {
+	srv := newSeededServer(t, false)
+	c := n8n.NewClient(srv.APIURL(), n8ntest.APIKey, srv.Client(), n8n.Options{CacheTTL: time.Minute})
+	_, err := c.ListWorkflows(context.Background())
+	require.NoError(t, err)
+	_, err = c.ListWorkflows(n8n.WithoutCache(context.Background()))
+	require.NoError(t, err)
+	require.Equal(t, 2, countRequests(srv, "GET /api/v1/workflows"))
+}
