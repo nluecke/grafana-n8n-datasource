@@ -1,11 +1,12 @@
 # Catalog submission – prepared texts
 
-Fields for grafana.com → _My Plugins_ → _Submit plugin_. Fill in URL and SHA1 from the GitHub release.
+Fields for grafana.com → _My Plugins_ → _Submit plugin_. The archive URL works once the v1.0.0 GitHub release is published (it is created as a draft).
 
 - **Plugin ID:** `nluecke-n8n-datasource`
 - **Archive URL:** `https://github.com/nluecke/grafana-n8n-datasource/releases/download/v1.0.0/nluecke-n8n-datasource-1.0.0.zip`
-- **SHA1:** from the release (`nluecke-n8n-datasource-1.0.0.zip.sha1` or `shasum <zip>`)
-- **Source code URL:** `https://github.com/nluecke/grafana-n8n-datasource` (tag `v1.0.0`)
+- **SHA1:** `cad3b51a32713aa2e015bf92d9e02f20383d15f2` (also in `nluecke-n8n-datasource-1.0.0.zip.sha1` of the release)
+- **Source code URL:** `https://github.com/nluecke/grafana-n8n-datasource` (tag `v1.0.0`, commit `641c23f`)
+- **Provenance:** build attestation for the archive (`gh attestation verify nluecke-n8n-datasource-1.0.0.zip --repo nluecke/grafana-n8n-datasource`)
 
 ## Testing guidance for reviewers
 
