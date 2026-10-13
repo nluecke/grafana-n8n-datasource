@@ -27,3 +27,6 @@ jobs:
           # variable SIGN_PLUGIN is true; until then the archive stays unsigned (first submission).
           policy_token: ${{ vars.SIGN_PLUGIN == 'true' && secrets.GRAFANA_ACCESS_POLICY_TOKEN || '' }}
           attestation: true
+          # The action defaults to Go 1.25 / Node 20; go.mod needs Go >= 1.26.5, CI uses Node 22.
+          go-version: '1.26'
+          node-version: '22'
