@@ -17,7 +17,7 @@ import (
 )
 
 // HeaderAPIKey is the header n8n reads the API key from.
-const HeaderAPIKey = "X-N8N-API-KEY"
+const HeaderAPIKey = "X-N8N-API-KEY" // #nosec G101 -- name of the HTTP header, not a credential
 
 // MaxPageLimit is the largest page size the n8n API accepts.
 const MaxPageLimit = 250
