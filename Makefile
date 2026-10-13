@@ -12,7 +12,7 @@ else
   BACKEND_TARGET := build:linux
 endif
 
-.PHONY: dev build build-frontend build-backend up bootstrap down clean logs test test-integration e2e dashboard
+.PHONY: dev build build-frontend build-backend up bootstrap down clean logs test test-integration e2e dashboard pdc
 
 ## dev: build the plugin, start n8n, bootstrap owner/keys/seed workflows, start Grafana
 dev: build
@@ -29,6 +29,9 @@ node_modules: package-lock.json
 
 build-frontend: node_modules
 	npm run build
+	@# A signed MANIFEST.txt is bound to the signing root URL; locally it would make
+	@# Grafana reject the plugin as invalidly signed. Unsigned plugins are allowed in dev.
+	@rm -f dist/MANIFEST.txt
 
 build-backend:
 	@test -x $(MAGE) || go install github.com/magefile/mage@latest
@@ -58,6 +61,10 @@ test:
 ## test-integration: queries against the instances configured in .env
 test-integration:
 	set -a; . ./.env; set +a; go test -tags integration ./pkg/plugin -run Integration -v -count=1
+
+## pdc: dev stack plus a SOCKS5 proxy, Grafana configured like Grafana Cloud with PDC
+pdc: build
+	docker compose -f docker-compose.yaml -f docker-compose.pdc.yaml up -d
 
 ## e2e: Playwright tests against the running dev stack
 e2e:

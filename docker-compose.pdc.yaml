@@ -1,0 +1,18 @@
+# Local test for Private Data Source Connect (PDC): Grafana routes data source
+# traffic through a SOCKS5 proxy, like Grafana Cloud does through the PDC agent.
+#   docker compose -f docker-compose.yaml -f docker-compose.pdc.yaml up -d
+# See https://grafana.com/developers/plugin-tools/how-to-guides/data-source-plugins/add-support-for-pdc
+services:
+  socks-proxy:
+    image: serjs/go-socks5-proxy:latest
+    environment:
+      REQUIRE_AUTH: 'false'
+
+  grafana:
+    environment:
+      GF_FEATURE_TOGGLES_ENABLE: secureSocksDSProxyEnabled
+      GF_SECURE_SOCKS_DATASOURCE_PROXY_ENABLED: 'true'
+      GF_SECURE_SOCKS_DATASOURCE_PROXY_PROXY_ADDRESS: socks-proxy:1080
+      GF_SECURE_SOCKS_DATASOURCE_PROXY_ALLOW_INSECURE: 'true'
+    depends_on:
+      - socks-proxy
