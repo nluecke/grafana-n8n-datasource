@@ -38,17 +38,24 @@ Grafana Cloud row of the test matrix.
    - [ ] one alert rule on the error rate (`executionStats`, metric `errorRate`, bucket `range`).
 6. [ ] Record results in `docs/poc-findings.md` (Phase 7 matrix).
 
-## Later: public catalog (community signature)
+## Public catalog (community signature) – the route to nluecke.grafana.net
 
-- [ ] Resolve the open validator finding: `braces` (osv-scanner HIGH, dev dependency via
-      `eslint-webpack-plugin`; see `docs/poc-findings.md`, Phase 6). Re-run
-      `npx @grafana/plugin-validator@latest -sourceCodeUri file://$PWD <zip>` until it reports no errors,
-      so that the validator's code diff and automated review also run.
-- [ ] Remove `--rootUrls` from the `sign` script (community signatures are not bound to root URLs).
-- [ ] Logo: replace the scaffold `src/img/logo.svg` (check n8n trademark guidelines before using n8n's logo).
-- [ ] Screenshot: replace `src/img/screenshot-dashboard.png` with neutral demo data (the current one shows a load-test spike).
-- [ ] Release: tag `v<version>`; `.github/workflows/release.yml` builds all platforms and creates a GitHub release
-      (enable `policy_token` in the `build-plugin` step for signing).
-- [ ] Submit on grafana.com → _My Plugins_ → _Submit plugin_: zip URL (GitHub release asset), SHA1, source code URL,
-      testing guidance for reviewers (`make dev` starts n8n with seed data).
-- [ ] After approval: Grafana Cloud × n8n Cloud and Grafana Cloud × n8n OSS via PDC tests as above.
+After approval the plugin gets a community signature (not bound to a root URL) and is installable from the
+catalog on Grafana Cloud and on any self-hosted Grafana.
+
+- [x] Logo: own neutral logo (`src/img/logo.svg`), not n8n's logo. n8n's brand guidelines
+      (https://n8n.io/brandguidelines/) only define how the logo looks, they grant no usage rights to third
+      parties. Permission requested separately; swap the logo in a later version if granted (keep n8n's rules:
+      unmodified, min. 100 px wide, clear space).
+- [x] Disclaimer "not affiliated with n8n GmbH" in README and plugin description.
+- [x] Screenshots without load-test data (`src/img/screenshot-dashboard.png`, `src/img/screenshot-config.png`).
+- [x] `sign` script without `--rootUrls`. Signing before approval fails with
+      `409 Field is required: rootUrls`, so CI and release only sign when the repository variable
+      `SIGN_PLUGIN` is `true`.
+- [x] Release workflow with build provenance attestation (`attestation: true`).
+- [ ] Release: `git tag v1.0.0 && git push origin v1.0.0` → `.github/workflows/release.yml` creates a **draft**
+      GitHub release with the zip; publish the draft.
+- [ ] Submit on grafana.com → _My Plugins_ → _Submit plugin_ (texts: `docs/catalog-submission.md`).
+- [ ] After approval: `gh variable set SIGN_PLUGIN --body true -R nluecke/grafana-n8n-datasource`, release the
+      signed version, install from the catalog on `nluecke.grafana.net`, run the Grafana Cloud tests above
+      (n8n Cloud, PDC, dashboard, alert rule) and record them in `docs/poc-findings.md`.
