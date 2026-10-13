@@ -223,3 +223,23 @@ jobs:
       #     name: ${{ matrix.GRAFANA_IMAGE.NAME }}-v${{ matrix.GRAFANA_IMAGE.VERSION }}-${{github.run_id}}-server-log
       #     path: grafana-server.log
       #     retention-days: 5
+
+  # Stable name for the required status check of the main branch ruleset; the e2e
+  # job names change with every Grafana version in the matrix.
+  ci-result:
+    name: CI result
+    if: ${{ always() }}
+    needs: [build, resolve-versions, playwright-tests]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check job results
+        env:
+          RESULTS: ${{ join(needs.*.result, ' ') }}
+        run: |
+          echo "Job results: ${RESULTS}"
+          for r in ${RESULTS}; do
+            case "$r" in
+              success|skipped) ;;
+              *) echo "A required job did not succeed: $r"; exit 1 ;;
+            esac
+          done
