@@ -16,7 +16,8 @@ import (
 	"github.com/nluecke/grafana-n8n-datasource/pkg/n8n"
 )
 
-const APIKey = "fake-api-key"
+// APIKey is the key the fake server accepts; tests only.
+const APIKey = "fake-api-key" // #nosec G101 -- dummy key of the test fake, not a credential
 
 // Server is a fake n8n instance serving under /api/v1.
 type Server struct {

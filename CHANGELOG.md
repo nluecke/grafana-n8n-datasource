@@ -1,5 +1,15 @@
 # Changelog
 
+## 1.0.2
+
+- Release build pinned to Go 1.26.9. The 1.0.1 tag was not released: its release build resolved Go 1.26.8 and stopped at the go.mod minimum.
+
+## 1.0.1
+
+- Build with Go 1.26.9 or later and golang.org/x/net v0.60.0 (Go vulnerability fixes reported by govulncheck)
+- Mark two gosec G101 false positives (HTTP header name, test fixture)
+- CI: security scan job with gosec and govulncheck
+
 ## 1.0.0
 
 Initial release.
