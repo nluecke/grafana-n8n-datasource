@@ -31,7 +31,5 @@ under Settings → n8n API, and configure the data source with URL `http://<host
   `pkg/n8n/client.go`.
 - Private Data Source Connect is supported through the SDK HTTP client and was tested locally with a SOCKS5
   proxy (`make pdc`).
-- Validator finding `braces` (osv-scanner, GHSA-vfj7-8cjw-p6xm): transitive dev/test dependency
-  (Jest and `eslint-webpack-plugin` via `micromatch`), as in every plugin created with `@grafana/create-plugin`.
-  It is not part of the plugin archive, and no fixed version is published yet.
+- `@grafana/plugin-validator` 0.49.5 on the release archive: no errors (only "unsigned plugin" and an optional sponsorship-link recommendation).
 - Community plugin, not affiliated with n8n GmbH; the plugin does not use n8n's logo.
