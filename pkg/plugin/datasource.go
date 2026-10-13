@@ -32,7 +32,7 @@ func NewDatasource(ctx context.Context, s backend.DataSourceInstanceSettings) (i
 	if err != nil {
 		return nil, err
 	}
-	ds := &Datasource{settings: settings}
+	ds := &Datasource{settings: settings, uid: s.UID}
 	ds.resourceHandler = httpadapter.New(ds.newResourceMux())
 	if ds.settingsErr = settings.Validate(); ds.settingsErr != nil {
 		return ds, nil
@@ -57,6 +57,7 @@ func NewDatasource(ctx context.Context, s backend.DataSourceInstanceSettings) (i
 // Datasource serves queries, resources and health checks for one n8n instance.
 type Datasource struct {
 	settings        *models.PluginSettings
+	uid             string
 	settingsErr     error
 	httpClient      *http.Client
 	client          *n8n.Client

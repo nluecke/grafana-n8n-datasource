@@ -131,7 +131,48 @@ func TestQueryExecutionsTruncationNotice(t *testing.T) {
 	res := runQuery(t, ds, QueryTypeExecutions, lastHours(24), map[string]any{})
 	require.NoError(t, res.Error)
 	require.Equal(t, 500, res.Frames[0].Rows())
-	require.Contains(t, noticeTexts(res.Frames), "Result truncated")
+	notices := res.Frames[0].Meta.Notices
+	require.Len(t, notices, 1)
+	// 500 of 1,440 executions per day loaded (one per minute) → ~35 % → about 6 pages needed.
+	require.Contains(t, notices[0].Text, "only the newest 500 executions were loaded")
+	require.Contains(t, notices[0].Text, "35% of the time range")
+	require.Contains(t, notices[0].Text, "raise \"Max pages\" in the data source settings (now 2; each page adds 250 executions, maximum 100)")
+	require.Contains(t, notices[0].Text, "At an even execution rate about 6 pages would cover the full range")
+	require.Equal(t, "/connections/datasources/edit/test-uid", notices[0].Link)
+
+	// Beyond the 100-page maximum the notice points to narrower ranges and Insights.
+	res = runQuery(t, ds, QueryTypeExecutions, lastHours(24*365), map[string]any{})
+	require.Contains(t, noticeTexts(res.Frames), "more than the maximum: use a shorter range, or the Insights query")
+}
+
+// Filtering on the server keeps failed executions complete although the
+// unfiltered list would be truncated.
+func TestQueryExecutionsFanOutKeepsFilteredResultsComplete(t *testing.T) {
+	// 3 pages = 750 executions: enough for the ~576 failures, not for all ~2,880 executions.
+	srv, ds := newFakeInstance(t, false, map[string]any{"maxPages": 3})
+	unfiltered := runQuery(t, ds, QueryTypeExecutions, lastHours(48), map[string]any{})
+	require.Contains(t, noticeTexts(unfiltered.Frames), "Incomplete data")
+
+	res := runQuery(t, ds, QueryTypeExecutions, lastHours(48), map[string]any{"statuses": []string{"error", "crashed"}})
+	require.NoError(t, res.Error)
+	// 3,000 executions, every 5th failed → 600 errors in the last ~50 h; 48 h window → 576.
+	require.InDelta(t, 576, res.Frames[0].Rows(), 2)
+	require.NotContains(t, noticeTexts(res.Frames), "Incomplete data")
+
+	var statusReqs []string
+	for _, r := range srv.Requests() {
+		if strings.Contains(r, "/executions?") && strings.Contains(r, "status=") {
+			statusReqs = append(statusReqs, r)
+		}
+	}
+	require.GreaterOrEqual(t, len(statusReqs), 2, "one request per status")
+
+	// Merged result is ordered newest first.
+	f := res.Frames[0]
+	for i := 1; i < f.Rows(); i++ {
+		prev, cur := f.Fields[5].At(i-1).(*time.Time), f.Fields[5].At(i).(*time.Time)
+		require.False(t, cur.After(*prev))
+	}
 }
 
 func TestQueryExecutionsHistoryNotice(t *testing.T) {
@@ -333,4 +374,10 @@ func TestResources(t *testing.T) {
 	resp = callResource(t, ds2, "/projects")
 	require.Equal(t, http.StatusOK, resp.Status)
 	require.JSONEq(t, `[]`, string(resp.Body))
+}
+
+func TestThousands(t *testing.T) {
+	for in, want := range map[int]string{0: "0", 250: "250", 5000: "5,000", 25000: "25,000", 1234567: "1,234,567"} {
+		require.Equal(t, want, thousands(in))
+	}
 }
