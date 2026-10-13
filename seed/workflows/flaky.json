@@ -1,0 +1,2 @@
+{"name":"seed: flaky","nodes":[{"parameters":{"rule":{"interval":[{"field":"minutes","minutesInterval":1}]}},"name":"Schedule","type":"n8n-nodes-base.scheduleTrigger","typeVersion":1.2,"position":[0,0]},{"parameters":{"jsCode":"if (Math.random() < 0.3) { throw new Error('random seed failure'); }\nreturn [{ json: { ok: true } }];"},"name":"Maybe Fail","type":"n8n-nodes-base.code","typeVersion":2,"position":[220,0]}],
+"connections":{"Schedule":{"main":[[{"node":"Maybe Fail","type":"main","index":0}]]}},"settings":{"executionOrder":"v1"}}

@@ -1,0 +1,51 @@
+{
+  "$schema": "https://raw.githubusercontent.com/grafana/grafana/main/docs/sources/developers/plugins/plugin.schema.json",
+  "type": "datasource",
+  "name": "n8n",
+  "id": "nluecke-n8n-datasource",
+  "metrics": true,
+  "backend": true,
+  "alerting": true,
+  "executable": "gpx_n8n",
+  "info": {
+    "description": "Workflow and execution observability for n8n Cloud and self-hosted n8n via the n8n public API",
+    "author": {
+      "name": "Niklas Luecke",
+      "url": "https://github.com/nluecke"
+    },
+    "keywords": ["datasource", "n8n", "workflow", "automation", "executions"],
+    "logos": {
+      "small": "img/logo.svg",
+      "large": "img/logo.svg"
+    },
+    "links": [
+      {
+        "name": "Source code",
+        "url": "https://github.com/nluecke/grafana-n8n-datasource"
+      },
+      {
+        "name": "Issues",
+        "url": "https://github.com/nluecke/grafana-n8n-datasource/issues"
+      }
+    ],
+    "screenshots": [
+      {
+        "name": "n8n Workflow Executions dashboard",
+        "path": "img/screenshot-dashboard.png"
+      }
+    ],
+    "version": "%VERSION%",
+    "updated": "%TODAY%"
+  },
+  "includes": [
+    {
+      "type": "dashboard",
+      "name": "n8n Workflow Executions (API)",
+      "path": "dashboards/n8n-workflow-executions.json"
+    }
+  ],
+  "dependencies": {
+    "grafanaDependency": ">=13.2.0",
+    "plugins": []
+  }
+}

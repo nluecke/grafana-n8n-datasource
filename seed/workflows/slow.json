@@ -1,0 +1,2 @@
+{"name":"seed: slow","nodes":[{"parameters":{"rule":{"interval":[{"field":"minutes","minutesInterval":1}]}},"name":"Schedule","type":"n8n-nodes-base.scheduleTrigger","typeVersion":1.2,"position":[0,0]},{"parameters":{"amount":20,"unit":"seconds"},"name":"Wait","type":"n8n-nodes-base.wait","typeVersion":1.1,"position":[220,0],"webhookId":"5b1c7a0e-1111-4c2e-9d6a-0000000000a1"}],
+"connections":{"Schedule":{"main":[[{"node":"Wait","type":"main","index":0}]]}},"settings":{"executionOrder":"v1"}}

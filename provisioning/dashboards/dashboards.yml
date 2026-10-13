@@ -1,0 +1,10 @@
+apiVersion: 1
+
+providers:
+  # Dashboards bundled with the plugin (dist/dashboards), for local development.
+  - name: 'n8n plugin dashboards'
+    orgId: 1
+    type: file
+    allowUiUpdates: true
+    options:
+      path: /var/lib/grafana/plugins/nluecke-n8n-datasource/dashboards

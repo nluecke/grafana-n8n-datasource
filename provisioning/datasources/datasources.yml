@@ -1,0 +1,32 @@
+apiVersion: 1
+
+datasources:
+  # n8n OSS from docker-compose.yaml
+  - name: 'n8n'
+    uid: 'n8n-local'
+    type: 'nluecke-n8n-datasource'
+    access: proxy
+    isDefault: true
+    orgId: 1
+    editable: true
+    url: '${N8N_PROVISIONING_URL}'
+    jsonData:
+      maxPages: 20
+      cacheTtlSeconds: 60
+    secureJsonData:
+      apiKey: '${N8N_API_KEY}'
+
+  # Optional second instance (n8n Cloud or another self-hosted n8n), configured via .env
+  - name: 'n8n remote'
+    uid: 'n8n-remote'
+    type: 'nluecke-n8n-datasource'
+    access: proxy
+    orgId: 1
+    editable: true
+    url: '${N8N_CLOUD_URL}'
+    jsonData:
+      maxPages: 20
+      cacheTtlSeconds: 60
+      tlsSkipVerify: true
+    secureJsonData:
+      apiKey: '${N8N_CLOUD_API_KEY}'

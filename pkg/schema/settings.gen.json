@@ -1,0 +1,59 @@
+{
+  "spec": {
+    "type": "object",
+    "required": [
+      "url"
+    ],
+    "properties": {
+      "jsonData": {
+        "type": "object",
+        "properties": {
+          "cacheTtlSeconds": {
+            "description": "How long API responses are cached in the backend",
+            "type": "number",
+            "default": 60,
+            "maximum": 3600,
+            "minimum": 0
+          },
+          "enableSecureSocksProxy": {
+            "description": "Route requests through Grafana Cloud Private Data Source Connect (PDC) to reach n8n on a private network",
+            "type": "boolean",
+            "default": false
+          },
+          "maxPages": {
+            "description": "Upper limit of API pages (250 executions each) fetched per query",
+            "type": "number",
+            "default": 20,
+            "maximum": 100,
+            "minimum": 1
+          },
+          "tlsAuthWithCACert": {
+            "description": "Verify the server certificate against a custom CA (e.g. internal PKI)",
+            "type": "boolean",
+            "default": false
+          },
+          "tlsSkipVerify": {
+            "type": "boolean",
+            "default": false
+          }
+        }
+      },
+      "url": {
+        "description": "Base URL of the n8n public API, including /api/v1. n8n Cloud: https://\u003cinstance\u003e.app.n8n.cloud/api/v1, self-hosted: http://\u003chost\u003e:5678/api/v1",
+        "type": "string",
+        "pattern": "^https?://"
+      }
+    }
+  },
+  "secureValues": [
+    {
+      "key": "apiKey",
+      "description": "n8n API key (Settings \u003e n8n API), sent as X-N8N-API-KEY header",
+      "required": true
+    },
+    {
+      "key": "tlsCACert",
+      "description": "PEM encoded CA certificate"
+    }
+  ]
+}

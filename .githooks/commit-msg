@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+# Reject commit messages that contain attribution trailers or tool references.
+msg_file="$1"
+body=$(grep -v '^#' "$msg_file")
+if printf '%s' "$body" | grep -qiE 'co-authored-by|claude|anthropic|generated with'; then
+  echo "commit-msg: forbidden attribution/tool reference in commit message" >&2
+  exit 1
+fi
+if printf '%s' "$body" | grep -qE '(^|[^[:alnum:]_])AI([^[:alnum:]_]|$)'; then
+  echo "commit-msg: forbidden term 'AI' in commit message" >&2
+  exit 1
+fi

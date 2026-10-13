@@ -1,0 +1,62 @@
+# Local dev stack: Grafana OSS with the plugin mounted, n8n OSS with Postgres.
+# Start with `make dev`; see README for details.
+name: grafana-n8n
+
+services:
+  grafana:
+    extends:
+      file: .config/docker-compose-base.yaml
+      service: grafana
+    build:
+      args:
+        grafana_image: ${GRAFANA_IMAGE:-grafana}
+    # Replaces the base ports (3000 + delve 2345) so both can be moved if taken.
+    ports: !override
+      - '${GRAFANA_PORT:-3000}:3000/tcp'
+    environment:
+      N8N_PROVISIONING_URL: http://n8n:5678/api/v1
+      N8N_API_KEY: ${N8N_API_KEY:-}
+      N8N_CLOUD_URL: ${N8N_CLOUD_URL:-}
+      N8N_CLOUD_API_KEY: ${N8N_CLOUD_API_KEY:-}
+    depends_on:
+      n8n:
+        condition: service_started
+
+  postgres:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: n8n
+      POSTGRES_PASSWORD: n8n
+      POSTGRES_DB: n8n
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U n8n']
+      interval: 5s
+      retries: 10
+
+  n8n:
+    image: n8nio/n8n:${N8N_VERSION:-latest}
+    ports:
+      - '${N8N_PORT:-5678}:5678'
+    environment:
+      DB_TYPE: postgresdb
+      DB_POSTGRESDB_HOST: postgres
+      DB_POSTGRESDB_DATABASE: n8n
+      DB_POSTGRESDB_USER: n8n
+      DB_POSTGRESDB_PASSWORD: n8n
+      N8N_SECURE_COOKIE: 'false'
+      N8N_DIAGNOSTICS_ENABLED: 'false'
+      GENERIC_TIMEZONE: Europe/Berlin
+      N8N_PUBLIC_API_DISABLED: ${N8N_PUBLIC_API_DISABLED:-false}
+      # Default is 60 and restarts with every container start; shorter for quick feedback in dev.
+      N8N_INSIGHTS_COMPACTION_INTERVAL_MINUTES: ${N8N_INSIGHTS_COMPACTION_INTERVAL_MINUTES:-2}
+    volumes:
+      - n8n_data:/home/node/.n8n
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+volumes:
+  pg_data:
+  n8n_data:

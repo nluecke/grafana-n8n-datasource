@@ -1,0 +1,154 @@
+{
+  "$schema": "https://raw.githubusercontent.com/grafana/dsconfig/refs/heads/main/dsconfig/schema.json",
+  "schemaVersion": "v1",
+  "pluginType": "nluecke-n8n-datasource",
+  "pluginName": "n8n",
+  "fields": [
+    {
+      "id": "connection.url",
+      "key": "url",
+      "label": "URL",
+      "description": "Base URL of the n8n public API, including /api/v1. n8n Cloud: https://<instance>.app.n8n.cloud/api/v1, self-hosted: http://<host>:5678/api/v1",
+      "valueType": "string",
+      "target": "root",
+      "role": "endpoint.baseUrl",
+      "required": true,
+      "validations": [
+        {
+          "type": "pattern",
+          "pattern": "^https?://",
+          "message": "Must start with http:// or https://"
+        }
+      ],
+      "ui": {
+        "component": "input",
+        "placeholder": "https://<instance>.app.n8n.cloud/api/v1"
+      }
+    },
+    {
+      "id": "auth.apiKey",
+      "key": "apiKey",
+      "label": "API key",
+      "description": "n8n API key (Settings > n8n API), sent as X-N8N-API-KEY header",
+      "valueType": "string",
+      "target": "secureJsonData",
+      "role": "auth.apiKey.value",
+      "required": true,
+      "ui": {
+        "component": "input",
+        "placeholder": "n8n API key"
+      }
+    },
+    {
+      "id": "jsonData.maxPages",
+      "key": "maxPages",
+      "label": "Max pages",
+      "description": "Upper limit of API pages (250 executions each) fetched per query",
+      "valueType": "number",
+      "target": "jsonData",
+      "defaultValue": 20,
+      "validations": [
+        {
+          "type": "range",
+          "min": 1,
+          "max": 100
+        }
+      ],
+      "ui": {
+        "component": "input"
+      }
+    },
+    {
+      "id": "jsonData.cacheTtlSeconds",
+      "key": "cacheTtlSeconds",
+      "label": "Cache TTL (seconds)",
+      "description": "How long API responses are cached in the backend",
+      "valueType": "number",
+      "target": "jsonData",
+      "defaultValue": 60,
+      "validations": [
+        {
+          "type": "range",
+          "min": 0,
+          "max": 3600
+        }
+      ],
+      "ui": {
+        "component": "input"
+      }
+    },
+    {
+      "id": "jsonData.tlsSkipVerify",
+      "key": "tlsSkipVerify",
+      "label": "Skip TLS verify",
+      "valueType": "boolean",
+      "target": "jsonData",
+      "role": "transport.tlsSkipVerify",
+      "defaultValue": false,
+      "ui": {
+        "component": "switch"
+      }
+    },
+    {
+      "id": "jsonData.tlsAuthWithCACert",
+      "key": "tlsAuthWithCACert",
+      "label": "With CA cert",
+      "description": "Verify the server certificate against a custom CA (e.g. internal PKI)",
+      "valueType": "boolean",
+      "target": "jsonData",
+      "defaultValue": false,
+      "ui": {
+        "component": "switch"
+      }
+    },
+    {
+      "id": "secure.tlsCACert",
+      "key": "tlsCACert",
+      "label": "CA cert",
+      "description": "PEM encoded CA certificate",
+      "valueType": "string",
+      "target": "secureJsonData",
+      "role": "tls.caCert",
+      "dependsOn": "jsonData.tlsAuthWithCACert == true",
+      "requiredWhen": "jsonData.tlsAuthWithCACert == true",
+      "ui": {
+        "component": "textarea",
+        "placeholder": "-----BEGIN CERTIFICATE-----"
+      }
+    },
+    {
+      "id": "jsonData.enableSecureSocksProxy",
+      "key": "enableSecureSocksProxy",
+      "label": "Private data source connect",
+      "description": "Route requests through Grafana Cloud Private Data Source Connect (PDC) to reach n8n on a private network",
+      "valueType": "boolean",
+      "target": "jsonData",
+      "defaultValue": false,
+      "ui": {
+        "component": "switch"
+      }
+    }
+  ],
+  "groups": [
+    {
+      "id": "connection",
+      "title": "Connection",
+      "order": 1,
+      "fieldRefs": ["connection.url", "auth.apiKey"]
+    },
+    {
+      "id": "tls",
+      "title": "TLS",
+      "order": 2,
+      "optional": true,
+      "fieldRefs": ["jsonData.tlsSkipVerify", "jsonData.tlsAuthWithCACert", "secure.tlsCACert"]
+    },
+    {
+      "id": "advanced",
+      "title": "Advanced",
+      "order": 3,
+      "optional": true,
+      "fieldRefs": ["jsonData.maxPages", "jsonData.cacheTtlSeconds", "jsonData.enableSecureSocksProxy"]
+    }
+  ]
+}
