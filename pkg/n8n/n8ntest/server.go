@@ -51,7 +51,7 @@ func NewServer() *Server {
 }
 
 // URL returns the API base URL including /api/v1.
-func (s *Server) APIURL() string { return s.Server.URL + "/api/v1" }
+func (s *Server) APIURL() string { return s.URL + "/api/v1" }
 
 // Requests returns the request log as "METHOD path?query".
 func (s *Server) Requests() []string {
