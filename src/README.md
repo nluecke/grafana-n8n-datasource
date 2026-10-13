@@ -1,5 +1,7 @@
 # n8n data source for Grafana
 
+> Community plugin. Not affiliated with, endorsed by or supported by n8n GmbH. "n8n" is a trademark of n8n GmbH.
+
 Workflow and execution observability for **n8n Cloud** and **self-hosted n8n**, based on the
 [n8n public REST API](https://docs.n8n.io/api/). Configure a URL and an API key; no Prometheus
 scraping and no database access are needed.

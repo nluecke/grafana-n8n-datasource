@@ -8,7 +8,7 @@
   "alerting": true,
   "executable": "gpx_n8n",
   "info": {
-    "description": "Workflow and execution observability for n8n Cloud and self-hosted n8n via the n8n public API",
+    "description": "Workflow and execution observability for n8n Cloud and self-hosted n8n via the n8n public API (community plugin, not affiliated with n8n GmbH)",
     "author": {
       "name": "Niklas Luecke",
       "url": "https://github.com/nluecke"
@@ -32,6 +32,10 @@
       {
         "name": "n8n Workflow Executions dashboard",
         "path": "img/screenshot-dashboard.png"
+      },
+      {
+        "name": "Data source configuration",
+        "path": "img/screenshot-config.png"
       }
     ],
     "version": "%VERSION%",

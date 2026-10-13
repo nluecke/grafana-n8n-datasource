@@ -193,8 +193,7 @@ export function ConfigEditor(props: Props) {
           description={
             <>
               Executions are loaded from n8n in pages of {PAGE_SIZE}, newest first. If a time range holds more
-              executions than one query may load, panels show &quot;Incomplete data&quot; with the value needed here.
-              See{' '}
+              executions than one query may load, panels show &quot;Incomplete data&quot; and how to fix it. See{' '}
               <TextLink href={`${DOCS_URL}#limitations`} external>
                 limitations
               </TextLink>
