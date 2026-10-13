@@ -12,7 +12,7 @@ else
   BACKEND_TARGET := build:linux
 endif
 
-.PHONY: dev build build-frontend build-backend up bootstrap down clean logs test test-integration e2e dashboard pdc
+.PHONY: dev build build-frontend build-backend up bootstrap down clean logs test test-integration e2e dashboard pdc security
 
 ## dev: build the plugin, start n8n, bootstrap owner/keys/seed workflows, start Grafana
 dev: build
@@ -65,6 +65,11 @@ test-integration:
 ## pdc: dev stack plus a SOCKS5 proxy, Grafana configured like Grafana Cloud with PDC
 pdc: build
 	docker compose -f docker-compose.yaml -f docker-compose.pdc.yaml up -d
+
+## security: gosec and govulncheck as run by the Grafana plugin validator
+security:
+	go run github.com/securego/gosec/v2/cmd/gosec@latest -quiet ./pkg/...
+	go run golang.org/x/vuln/cmd/govulncheck@latest ./...
 
 ## e2e: Playwright tests against the running dev stack
 e2e:

@@ -224,6 +224,23 @@ jobs:
       #     path: grafana-server.log
       #     retention-days: 5
 
+  # Same scanners as the Grafana plugin validator. Not a required check: a newly
+  # published Go vulnerability should not block every PR until Go ships a fix.
+  security-scan:
+    name: Security scan
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - uses: actions/setup-go@v6
+        with:
+          go-version-file: go.mod
+      - name: govulncheck (source)
+        run: go run golang.org/x/vuln/cmd/govulncheck@latest ./...
+      - name: gosec
+        run: go run github.com/securego/gosec/v2/cmd/gosec@latest -quiet ./pkg/...
+
   # Stable name for the required status check of the main branch ruleset; the e2e
   # job names change with every Grafana version in the matrix.
   ci-result:

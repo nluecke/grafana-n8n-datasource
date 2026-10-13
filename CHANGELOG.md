@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.0.1
+
+- Build with Go 1.26.9 or later and golang.org/x/net v0.60.0 (Go vulnerability fixes reported by govulncheck)
+- Mark two gosec G101 false positives (HTTP header name, test fixture)
+- CI: security scan job with gosec and govulncheck
+
 ## 1.0.0
 
 Initial release.

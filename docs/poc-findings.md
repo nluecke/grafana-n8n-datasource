@@ -180,3 +180,12 @@ Main risks and limits: execution retention (dashboard range), truncation on high
 - 2026-10-13 – Release action defaults to Go 1.25 / Node 20, but `go.mod` requires Go ≥ 1.26.5 → `go-version: '1.26'`, `node-version: '22'` in `release.yml`.
 - 2026-10-13 – Lockfiles must be generated so that `npm ci` works with npm 10 (CI, Node 22) and npm 11 (local); after dependency changes run `npx npm@10 install --package-lock-only` and test `npm ci` with both.
 - 2026-10-13 – Branch protection: ruleset "main: PR + green CI" (no force push/deletion, PR required, required check `CI result`, an aggregate job because e2e job names change with the Grafana matrix).
+
+## Catalog submission feedback (2026-10-13)
+
+- 2026-10-13 – Automated submission checks on v1.0.0: warnings only ("can be reviewed"): gosec G101 ×2, govulncheck source (11) and binary (13) findings, unsigned plugin.
+- gosec G101 were false positives (`HeaderAPIKey = "X-N8N-API-KEY"` is a header name, `n8ntest.APIKey` a test dummy) → `#nosec G101` with justification.
+- govulncheck binary: the release was built with a Go 1.26 patch below 1.26.9 → `go.mod` now requires Go 1.26.9 (the release job runs with `GOTOOLCHAIN=local`, so an older Go fails loudly). `golang.org/x/net` v0.59.0 → v0.60.0 (GO-2026-6611, GO-2026-6617).
+- govulncheck source: the validator runs it with `GOTOOLCHAIN=local`, i.e. with the reviewer environment's own Go; its standard-library findings ("update to 1.27.2") depend on that environment, not on the plugin. Locally the source scan is clean with Go 1.26.9 and 1.27.2.
+- Local toolchain note: Homebrew's golangci-lint pulled in Go 1.27.2; gosec cannot read Go 1.27 export data yet → run gosec with `GOTOOLCHAIN=go1.26.9`.
+- CI: new non-required job "Security scan" (gosec + govulncheck), `make security` locally. Released as v1.0.1.
