@@ -53,8 +53,10 @@ catalog on Grafana Cloud and on any self-hosted Grafana.
       `409 Field is required: rootUrls`, so CI and release only sign when the repository variable
       `SIGN_PLUGIN` is `true`.
 - [x] Release workflow with build provenance attestation (`attestation: true`).
-- [ ] Release: `git tag v1.0.0 && git push origin v1.0.0` → `.github/workflows/release.yml` creates a **draft**
-      GitHub release with the zip; publish the draft.
+- [x] Release: `v1.0.0` submitted, automated checks flagged Go/x-net vulnerabilities and gosec false positives;
+      fixed in `v1.0.2` (draft GitHub release with zip, SHA1, build attestation; validator: only "unsigned").
+      `v1.0.1` is a tag without release (release build stopped at the Go minimum). Release tags `v*` are immutable.
+- [ ] Publish the v1.0.2 draft release and update the submission (URL, SHA1).
 - [ ] Submit on grafana.com → _My Plugins_ → _Submit plugin_ (texts: `docs/catalog-submission.md`).
 - [ ] After approval: `gh variable set SIGN_PLUGIN --body true -R nluecke/grafana-n8n-datasource`, release the
       signed version, install from the catalog on `nluecke.grafana.net`, run the Grafana Cloud tests above
