@@ -81,7 +81,9 @@
   },
   "packageManager": "npm@11.20.0",
   "overrides": {
-    "basic-ftp": "^6.2.3"
+    "basic-ftp": "^6.2.3",
+    "@types/react": "$@types/react",
+    "@types/react-dom": "$@types/react-dom"
   },
   "repository": {
     "type": "git",
