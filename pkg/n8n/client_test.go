@@ -68,7 +68,7 @@ func TestClientRefusesNonAllowlistedRequestWithoutSending(t *testing.T) {
 
 func TestClientSendsKeyAndEncodesQuery(t *testing.T) {
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		require.Equal(t, "secret", r.Header.Get(HeaderAPIKey))
+		require.Equal(t, "secret", r.Header.Get(AuthHeader))
 		require.Equal(t, "/api/v1/executions", r.URL.Path)
 		require.Equal(t, "startedAfter=2026-10-13T00%3A00%3A00Z", r.URL.RawQuery)
 		w.Header().Set("Content-Type", "application/json; charset=utf-8")

@@ -40,7 +40,7 @@ func newFakeInstance(t *testing.T, legacy bool, jsonData map[string]any) (*n8nte
 	if jsonData == nil {
 		jsonData = map[string]any{}
 	}
-	ds := newTestDatasource(t, srv.APIURL(), jsonData, map[string]string{"apiKey": n8ntest.APIKey})
+	ds := newTestDatasource(t, srv.APIURL(), jsonData, map[string]string{"apiKey": n8ntest.Key})
 	return srv, ds
 }
 
@@ -370,7 +370,7 @@ func TestResources(t *testing.T) {
 	require.JSONEq(t, `[{"value":"p1","label":"Default"}]`, string(resp.Body))
 
 	srv.ProjectsForbidden = true
-	ds2 := newTestDatasource(t, srv.APIURL(), map[string]any{"cacheTtlSeconds": 0}, map[string]string{"apiKey": n8ntest.APIKey})
+	ds2 := newTestDatasource(t, srv.APIURL(), map[string]any{"cacheTtlSeconds": 0}, map[string]string{"apiKey": n8ntest.Key})
 	resp = callResource(t, ds2, "/projects")
 	require.Equal(t, http.StatusOK, resp.Status)
 	require.JSONEq(t, `[]`, string(resp.Body))

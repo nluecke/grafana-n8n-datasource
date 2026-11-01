@@ -16,8 +16,8 @@ import (
 	"github.com/nluecke/grafana-n8n-datasource/pkg/n8n"
 )
 
-// APIKey is the key the fake server accepts; tests only.
-const APIKey = "fake-api-key" // #nosec G101 -- dummy key of the test fake, not a credential
+// Key is the API key the fake server accepts; tests only.
+const Key = "fake-api-key"
 
 // Server is a fake n8n instance serving under /api/v1.
 type Server struct {
@@ -74,7 +74,7 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		writeJSON(w, s.FailStatus, map[string]string{"message": http.StatusText(s.FailStatus)})
 		return
 	}
-	if r.Header.Get(n8n.HeaderAPIKey) != APIKey {
+	if r.Header.Get(n8n.AuthHeader) != Key {
 		writeJSON(w, http.StatusUnauthorized, map[string]string{"message": "Unauthorized"})
 		return
 	}

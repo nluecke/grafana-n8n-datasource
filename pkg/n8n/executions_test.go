@@ -36,7 +36,7 @@ func countRequests(srv *n8ntest.Server, prefix string) int {
 
 func TestListExecutionsServerTimeFilter(t *testing.T) {
 	srv := newSeededServer(t, false)
-	c := n8n.NewClient(srv.APIURL(), n8ntest.APIKey, srv.Client())
+	c := n8n.NewClient(srv.APIURL(), n8ntest.Key, srv.Client())
 
 	res, err := c.ListExecutions(context.Background(), n8n.ExecutionFilter{
 		From: now.Add(-6 * time.Hour), To: now, ServerTimeFilter: true, MaxPages: 20,
@@ -50,7 +50,7 @@ func TestListExecutionsServerTimeFilter(t *testing.T) {
 
 func TestListExecutionsClientCutoff(t *testing.T) {
 	srv := newSeededServer(t, true)
-	c := n8n.NewClient(srv.APIURL(), n8ntest.APIKey, srv.Client())
+	c := n8n.NewClient(srv.APIURL(), n8ntest.Key, srv.Client())
 
 	res, err := c.ListExecutions(context.Background(), n8n.ExecutionFilter{
 		From: now.Add(-6 * time.Hour), To: now, MaxPages: 20,
@@ -68,7 +68,7 @@ func TestListExecutionsClientCutoff(t *testing.T) {
 
 func TestListExecutionsStopsOnlyWhenWholePageIsBeforeRange(t *testing.T) {
 	srv := newSeededServer(t, true)
-	c := n8n.NewClient(srv.APIURL(), n8ntest.APIKey, srv.Client())
+	c := n8n.NewClient(srv.APIURL(), n8ntest.Key, srv.Client())
 
 	// Range ends 10 hours ago: the first pages are newer than the range and must be skipped, not stop paging.
 	res, err := c.ListExecutions(context.Background(), n8n.ExecutionFilter{
@@ -84,7 +84,7 @@ func TestListExecutionsStopsOnlyWhenWholePageIsBeforeRange(t *testing.T) {
 
 func TestListExecutionsMaxPages(t *testing.T) {
 	srv := newSeededServer(t, true)
-	c := n8n.NewClient(srv.APIURL(), n8ntest.APIKey, srv.Client())
+	c := n8n.NewClient(srv.APIURL(), n8ntest.Key, srv.Client())
 
 	res, err := c.ListExecutions(context.Background(), n8n.ExecutionFilter{
 		From: now.Add(-48 * time.Hour), To: now, MaxPages: 3,
@@ -98,7 +98,7 @@ func TestListExecutionsMaxPages(t *testing.T) {
 
 func TestListExecutionsPassesSingleFilters(t *testing.T) {
 	srv := newSeededServer(t, false)
-	c := n8n.NewClient(srv.APIURL(), n8ntest.APIKey, srv.Client())
+	c := n8n.NewClient(srv.APIURL(), n8ntest.Key, srv.Client())
 	_, err := c.ListExecutions(context.Background(), n8n.ExecutionFilter{
 		Status: "error", WorkflowID: "wf1", ProjectID: "p1", From: now.Add(-time.Hour), To: now, ServerTimeFilter: true,
 	})
@@ -112,7 +112,7 @@ func TestListExecutionsPassesSingleFilters(t *testing.T) {
 func TestSupportsStartedAfter(t *testing.T) {
 	for _, legacy := range []bool{false, true} {
 		srv := newSeededServer(t, legacy)
-		ok, err := n8n.NewClient(srv.APIURL(), n8ntest.APIKey, srv.Client()).SupportsStartedAfter(context.Background())
+		ok, err := n8n.NewClient(srv.APIURL(), n8ntest.Key, srv.Client()).SupportsStartedAfter(context.Background())
 		require.NoError(t, err)
 		require.Equal(t, !legacy, ok)
 	}
@@ -121,7 +121,7 @@ func TestSupportsStartedAfter(t *testing.T) {
 func TestRetryOn429(t *testing.T) {
 	srv := newSeededServer(t, false)
 	srv.FailNext, srv.FailStatus, srv.RetryAfter = 2, http.StatusTooManyRequests, "1"
-	c := n8n.NewClient(srv.APIURL(), n8ntest.APIKey, srv.Client(), n8n.Options{MaxRetries: 3})
+	c := n8n.NewClient(srv.APIURL(), n8ntest.Key, srv.Client(), n8n.Options{MaxRetries: 3})
 	n8n.SetSleepForTest(c, func(context.Context, time.Duration) error { return nil })
 
 	_, err := c.ListWorkflows(context.Background())
@@ -132,7 +132,7 @@ func TestRetryOn429(t *testing.T) {
 func TestRetryGivesUp(t *testing.T) {
 	srv := newSeededServer(t, false)
 	srv.FailNext, srv.FailStatus = 10, http.StatusServiceUnavailable
-	c := n8n.NewClient(srv.APIURL(), n8ntest.APIKey, srv.Client(), n8n.Options{MaxRetries: 2})
+	c := n8n.NewClient(srv.APIURL(), n8ntest.Key, srv.Client(), n8n.Options{MaxRetries: 2})
 	var waits []time.Duration
 	n8n.SetSleepForTest(c, func(_ context.Context, d time.Duration) error { waits = append(waits, d); return nil })
 
@@ -147,7 +147,7 @@ func TestRetryGivesUp(t *testing.T) {
 func TestNoRetryOnClientErrors(t *testing.T) {
 	srv := newSeededServer(t, false)
 	srv.FailNext, srv.FailStatus = 1, http.StatusForbidden
-	c := n8n.NewClient(srv.APIURL(), n8ntest.APIKey, srv.Client())
+	c := n8n.NewClient(srv.APIURL(), n8ntest.Key, srv.Client())
 	_, err := c.ListWorkflows(context.Background())
 	require.Error(t, err)
 	require.Equal(t, 1, countRequests(srv, "GET /api/v1/workflows"))
@@ -155,7 +155,7 @@ func TestNoRetryOnClientErrors(t *testing.T) {
 
 func TestCache(t *testing.T) {
 	srv := newSeededServer(t, false)
-	c := n8n.NewClient(srv.APIURL(), n8ntest.APIKey, srv.Client(), n8n.Options{CacheTTL: time.Minute})
+	c := n8n.NewClient(srv.APIURL(), n8ntest.Key, srv.Client(), n8n.Options{CacheTTL: time.Minute})
 	clock := now
 	n8n.SetClockForTest(c, func() time.Time { return clock })
 
@@ -185,14 +185,14 @@ func TestCache(t *testing.T) {
 
 func TestAuditEmptyArray(t *testing.T) {
 	srv := newSeededServer(t, false)
-	reports, err := n8n.NewClient(srv.APIURL(), n8ntest.APIKey, srv.Client()).Audit(context.Background())
+	reports, err := n8n.NewClient(srv.APIURL(), n8ntest.Key, srv.Client()).Audit(context.Background())
 	require.NoError(t, err)
 	require.Empty(t, reports)
 }
 
 func TestWithoutCacheBypassesCache(t *testing.T) {
 	srv := newSeededServer(t, false)
-	c := n8n.NewClient(srv.APIURL(), n8ntest.APIKey, srv.Client(), n8n.Options{CacheTTL: time.Minute})
+	c := n8n.NewClient(srv.APIURL(), n8ntest.Key, srv.Client(), n8n.Options{CacheTTL: time.Minute})
 	_, err := c.ListWorkflows(context.Background())
 	require.NoError(t, err)
 	_, err = c.ListWorkflows(n8n.WithoutCache(context.Background()))
