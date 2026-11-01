@@ -3,6 +3,7 @@
 ## 1.0.3
 
 - Build with Go 1.26.10 (GO-2026-6809: distrust compromised intermediate certificates in crypto/x509) and golang.org/x/net v0.62.0
+- Frontend built against Grafana 13.3 packages (`@grafana/data`, `ui`, `runtime`, `schema`, `i18n` 13.3.0, `@grafana/plugin-ui` 0.17.9); still compatible with Grafana 13.2
 
 ## 1.0.2
 

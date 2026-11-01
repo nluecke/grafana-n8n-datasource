@@ -18,9 +18,6 @@ updates:
       # eslint-plugin-react 7.x (required by @grafana/eslint-config) has no eslint 10 peer support yet.
       - dependency-name: 'eslint'
         update-types: ['version-update:semver-major']
-      # @grafana/plugin-ui declares a peer dependency on @testing-library/jest-dom ^6.
-      - dependency-name: '@testing-library/jest-dom'
-        update-types: ['version-update:semver-major']
     groups:
       unit-test:
         patterns:
