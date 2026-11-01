@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.0.3
+
+- Build with Go 1.26.10 (GO-2026-6809: distrust compromised intermediate certificates in crypto/x509) and golang.org/x/net v0.62.0
+
 ## 1.0.2
 
 - Release build pinned to Go 1.26.9. The 1.0.1 tag was not released: its release build resolved Go 1.26.8 and stopped at the go.mod minimum.
