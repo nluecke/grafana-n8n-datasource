@@ -3,10 +3,10 @@
 Fields for grafana.com → _My Plugins_ → _Submit plugin_, filled in for the version currently under review.
 
 - **Plugin ID:** `nluecke-n8n-datasource`
-- **Archive URL:** `https://github.com/nluecke/grafana-n8n-datasource/releases/download/v1.0.3/nluecke-n8n-datasource-1.0.3.zip`
-- **SHA1:** `5476d895e3f1f66a30ba6b4791502a731d762b9d` (also in `nluecke-n8n-datasource-1.0.3.zip.sha1` of the release)
-- **Source code URL:** `https://github.com/nluecke/grafana-n8n-datasource` (tag `v1.0.3`, commit `8336eb1`)
-- **Provenance:** build attestation for the archive (`gh attestation verify nluecke-n8n-datasource-1.0.3.zip --repo nluecke/grafana-n8n-datasource`)
+- **Archive URL:** `https://github.com/nluecke/grafana-n8n-datasource/releases/download/v1.0.4/nluecke-n8n-datasource-1.0.4.zip`
+- **SHA1:** `21aaeef70154ffe424401b2c96279a6b79db37f6` (also in `nluecke-n8n-datasource-1.0.4.zip.sha1` of the release)
+- **Source code URL:** `https://github.com/nluecke/grafana-n8n-datasource` (tag `v1.0.4`, commit `c65a8d1`)
+- **Provenance:** build attestation for the archive (`gh attestation verify nluecke-n8n-datasource-1.0.4.zip --repo nluecke/grafana-n8n-datasource`)
 
 ## Testing guidance for reviewers
 
@@ -32,7 +32,5 @@ under Settings → n8n API, and configure the data source with URL `http://<host
   `pkg/n8n/client.go`.
 - Private Data Source Connect is supported through the SDK HTTP client and was tested locally with a SOCKS5
   proxy (`make pdc`).
-- `@grafana/plugin-validator` 0.52.1 on the v1.0.3 archive with gosec and govulncheck: exit 0, warnings only. All binaries built with Go 1.26.10; govulncheck binary scan clean.
-  - gosec G101 ×2: false positives, the header name `X-N8N-API-KEY` (`pkg/n8n/client.go`) and the dummy key of the test fake (`pkg/n8n/n8ntest/server.go`). Both carry `#nosec` comments, which the validator ignores.
-  - govulncheck source scan ("update Go toolchain"): runs with the validator environment's own Go toolchain, not the one the plugin is built with.
+- `@grafana/plugin-validator` 0.52.1 on the v1.0.4 archive with gosec and govulncheck: exit 0, gosec reports no issues (also with `-nosec=true`). Remaining warnings: "unsigned plugin" and, only with a local Go 1.27.2 toolchain, the govulncheck source scan, which runs with the environment's own Go (not reported by the catalog checks for v1.0.3). All binaries built with Go 1.26.10; govulncheck binary scan clean.
 - Community plugin, not affiliated with n8n GmbH; the plugin does not use n8n's logo.
