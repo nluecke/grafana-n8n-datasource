@@ -1,6 +1,6 @@
 # Catalog submission – prepared texts
 
-Fields for grafana.com → _My Plugins_ → _Submit plugin_. The archive URL works once the v1.0.2 GitHub release is published (it is created as a draft).
+Fields for grafana.com → _My Plugins_ → _Submit plugin_, filled in for the version currently under review.
 
 - **Plugin ID:** `nluecke-n8n-datasource`
 - **Archive URL:** `https://github.com/nluecke/grafana-n8n-datasource/releases/download/v1.0.2/nluecke-n8n-datasource-1.0.2.zip`

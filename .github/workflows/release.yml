@@ -28,6 +28,6 @@ jobs:
           policy_token: ${{ vars.SIGN_PLUGIN == 'true' && secrets.GRAFANA_ACCESS_POLICY_TOKEN || '' }}
           attestation: true
           # The action defaults to Go 1.25 / Node 20. Pin the exact patch required by go.mod:
-          # '1.26' resolved to a cached 1.26.8 on the runner, below the minimum 1.26.9.
-          go-version: '1.26.9'
+          # '1.26' resolved to a cached 1.26.8 on the runner, below the go.mod minimum.
+          go-version: '1.26.10'
           node-version: '22'
