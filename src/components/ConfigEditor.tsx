@@ -38,7 +38,8 @@ const READ_SCOPES = [
 const getStyles = (theme: GrafanaTheme2) => ({
   code: css({
     fontFamily: theme.typography.fontFamilyMonospace,
-    fontSize: theme.typography.bodySmall.fontSize,
+    // 12px like the small body text; `typography.sm` only exists from Grafana 13.3.
+    fontSize: theme.typography.pxToRem(12),
   }),
 });
 
