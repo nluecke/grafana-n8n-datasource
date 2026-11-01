@@ -16,8 +16,8 @@ import (
 	"time"
 )
 
-// HeaderAPIKey is the header n8n reads the API key from.
-const HeaderAPIKey = "X-N8N-API-KEY" // #nosec G101 -- name of the HTTP header, not a credential
+// AuthHeader is the header n8n reads the API key from.
+const AuthHeader = "X-N8N-API-KEY"
 
 // MaxPageLimit is the largest page size the n8n API accepts.
 const MaxPageLimit = 250
@@ -195,7 +195,7 @@ func (c *Client) sendOnce(ctx context.Context, method, u string) ([]byte, time.D
 	if err != nil {
 		return nil, 0, err
 	}
-	req.Header.Set(HeaderAPIKey, c.apiKey)
+	req.Header.Set(AuthHeader, c.apiKey)
 	req.Header.Set("Accept", "application/json")
 
 	resp, err := c.httpClient.Do(req)

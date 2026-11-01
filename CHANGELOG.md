@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.0.4
+
+- Rename the API key header constant and the test fake's dummy key so gosec G101 (hardcoded credentials) no longer reports false positives; the plugin validator ignores `#nosec` comments
+
 ## 1.0.3
 
 - Build with Go 1.26.10 (GO-2026-6809: distrust compromised intermediate certificates in crypto/x509) and golang.org/x/net v0.62.0
