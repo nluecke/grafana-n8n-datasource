@@ -26,28 +26,35 @@ Format: date – finding – consequence.
 - 2026-10-13 – Pagination: `nextCursor` is base64 JSON `{"lastId":"<execId>","limit":N}` → keyset pagination by id, newest first; stable under concurrent inserts.
 - 2026-10-13 – `status` accepts **one** value only (`error,success` → 400). – Multi-status filter = several requests or client-side filtering.
 - 2026-10-13 – Version differences 2.42.7 (local) vs remote (older):
-  | Behaviour                                                                                                                                                              | 2.42.7                  | remote (older)                               |
-  | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------- | -------------------------------------------- |
-  | `startedAfter`/`startedBefore`                                                                                                                                         | yes                     | 400 `Unknown query parameter 'startedAfter'` |
-  | `limit` > 250                                                                                                                                                          | silently clamped to 250 | 400 `limit must be <= 250`                   |
-  | unencoded `:` in query values                                                                                                                                          | accepted                | 400 `must be url encoded`                    |
-  | – Client must always URL-encode, cap `limit` at 250, and can detect the time filter by probing once (400 "Unknown query parameter" → fall back to client-side cutoff). |
+
+  | Behaviour                      | 2.42.7                  | remote (older)                               |
+  | ------------------------------ | ----------------------- | -------------------------------------------- |
+  | `startedAfter`/`startedBefore` | yes                     | 400 `Unknown query parameter 'startedAfter'` |
+  | `limit` > 250                  | silently clamped to 250 | 400 `limit must be <= 250`                   |
+  | unencoded `:` in query values  | accepted                | 400 `must be url encoded`                    |
+
+  – Client must always URL-encode, cap `limit` at 250, and can detect the time filter by probing once (400 "Unknown query parameter" → fall back to client-side cutoff).
+
 - 2026-10-13 – `GET /workflows` returns full node definitions (~2 KB per simple workflow). Filters: `active`, `tags`, `name`, `projectId`, `excludePinnedData`. – Cache workflow list; consider `excludePinnedData=true`.
 - 2026-10-13 – `POST /audit` works on local Community Edition (returns risk reports); 403 on remote with this key. `GET /projects` → 403 on Community (`Your license does not allow for feat:projectRole:admin`). – `audit` query type optional; project filter/dropdown only where licensed, must degrade gracefully.
 
 ### Measurements (local, n8n 2.42.7 + Postgres, M-series Mac, 3 runs)
 
 - 2026-10-13 – Load: 5,000 webhook executions in 69 s (P=10), all 200; ~10 % error by design.
-  | Window                                                                                                                                                                                                                                                                                    | Pages × limit           | Total time |
-  | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------- | ---------- |
-  | 100 executions                                                                                                                                                                                                                                                                            | 1 × 100                 | 14–48 ms   |
-  | 1,000 executions                                                                                                                                                                                                                                                                          | 4 × 250                 | 55–59 ms   |
-  | 5,006 executions                                                                                                                                                                                                                                                                          | 21 × 250                | 234–270 ms |
-  | 5,006 executions                                                                                                                                                                                                                                                                          | 51 × 100                | 470–600 ms |
-  | 2,197 of 5,006 (partial window)                                                                                                                                                                                                                                                           | 9 × 250, client cutoff  | 201 ms     |
-  | same                                                                                                                                                                                                                                                                                      | 9 × 250, `startedAfter` | 112 ms     |
-  | (Correction 2026-10-13: the probe compared timestamps as strings — `"…45.007Z" < "…45Z"` — so window row counts are off by a few dozen rows at the boundary; timings are unaffected. Re-check with parsed times: `startedAfter` returns no older rows; `startedBefore` is **inclusive**.) |
-  | – Far below the 5 s Go threshold even without cache. Remote/WAN latency (~130 ms per request against the remote instance) will dominate: 5,000 executions ≈ 21 requests ≈ 3 s → cache + `maxPages` needed.                                                                                |
+
+  | Window                          | Pages × limit           | Total time |
+  | ------------------------------- | ----------------------- | ---------- |
+  | 100 executions                  | 1 × 100                 | 14–48 ms   |
+  | 1,000 executions                | 4 × 250                 | 55–59 ms   |
+  | 5,006 executions                | 21 × 250                | 234–270 ms |
+  | 5,006 executions                | 51 × 100                | 470–600 ms |
+  | 2,197 of 5,006 (partial window) | 9 × 250, client cutoff  | 201 ms     |
+  | same                            | 9 × 250, `startedAfter` | 112 ms     |
+
+  (Correction 2026-10-13: the probe compared timestamps as strings — `"…45.007Z" < "…45Z"` — so window row counts are off by a few dozen rows at the boundary; timings are unaffected. Re-check with parsed times: `startedAfter` returns no older rows; `startedBefore` is **inclusive**.)
+
+  – Far below the 5 s Go threshold even without cache. Remote/WAN latency (~130 ms per request against the remote instance) will dominate: 5,000 executions ≈ 21 requests ≈ 3 s → cache + `maxPages` needed.
+
 - 2026-10-13 – Rate limit: 1,500 requests in 10 s (20 parallel) on `/executions?limit=1` → all 200, no rate-limit headers. – No public-API rate limit on self-hosted by default; keep retry/backoff for reverse proxies and Cloud (unverified).
 
 ### Pruning & retention
@@ -98,12 +105,15 @@ Open before the Cloud part is confirmed:
 - 2026-10-13 – Paging without server filter stops only when a page lies **completely** before the range (one extra page compared to "oldest item before range"), because ids and start times are not strictly ordered (queued executions in queue mode).
 - 2026-10-13 – `POST /audit` returns `[]` instead of an object when no risk is found (n8n source: `if (reports.length === 0) return []`).
 - 2026-10-13 – **Insights licence errors are 403**, not 400 (Phase 1 only looked at the message). Community Edition rules measured on 2.42.7:
-  | Range                                                                                                                                   | Result                                                                            |
-  | --------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------- |
-  | < 24 h (e.g. 23 h, or today 00:00 → now)                                                                                                | 403 `Hourly data is not available with your current license`                      |
-  | ≥ 24 h within the last ~7 days (also `endDate` in the future)                                                                           | 200                                                                               |
-  | starting 8 days ago                                                                                                                     | 403 `The selected date range exceeds the maximum history allowed by your license` |
-  | – Time series buckets always span full days (current bucket ends tomorrow 00:00); `auto` falls back from hourly to daily with a notice. |
+
+  | Range                                                         | Result                                                                            |
+  | ------------------------------------------------------------- | --------------------------------------------------------------------------------- |
+  | < 24 h (e.g. 23 h, or today 00:00 → now)                      | 403 `Hourly data is not available with your current license`                      |
+  | ≥ 24 h within the last ~7 days (also `endDate` in the future) | 200                                                                               |
+  | starting 8 days ago                                           | 403 `The selected date range exceeds the maximum history allowed by your license` |
+
+  – Time series buckets always span full days (current bucket ends tomorrow 00:00); `auto` falls back from hourly to daily with a notice.
+
 - 2026-10-13 – Insights were still 0 locally ~45 min after 5,000 executions (raw rows present, compaction every 60 min) → confirms the lag.
 - 2026-10-13 – Real-instance run (`go test -tags integration`, cache off):
   | Query                       | local 2.42.7 (CE)                                      | remote (older, licensed)                   |
@@ -163,7 +173,7 @@ Open before the Cloud part is confirmed:
 
 Main risks and limits: execution retention (dashboard range), truncation on high-volume instances (maxPages), Insights licence limits and hourly lag, n8n Cloud not yet verified, Grafana Cloud only after signing/publishing (`docs/publishing.md`).
 
-- 2026-10-13 – Plugin ID `nluecke-n8n-datasource` (grafana.com organisation `nluecke`, Grafana Cloud stack `nluecke.grafana.net`). Next step: private signature for `https://nluecke.grafana.net` (see `docs/publishing.md`); whether Grafana Cloud can install privately signed plugins is still to be clarified.
+- 2026-10-13 – Plugin ID `nluecke-n8n-datasource` (grafana.com organisation `nluecke`, Grafana Cloud stack `nluecke.grafana.net`). Next step at the time: private signature for `https://nluecke.grafana.net`. Superseded: Grafana Cloud only installs catalog plugins, see `docs/publishing.md`.
 
 ## Pre-release fixes (2026-10-13)
 
@@ -177,7 +187,7 @@ Main risks and limits: execution retention (dashboard range), truncation on high
 
 - 2026-10-13 – The `grafana/plugin-actions/build-plugin` release action runs `@grafana/plugin-validator` itself and failed on `braces` (GHSA-vfj7-8cjw-p6xm, published 2026-09-18, no fixed version). The validator ignores `osv-scanner.toml` and only skips findings pulled in by `@grafana/*` packages or on its internal whitelist (currently only `playwright@1.55.0`). The current `@grafana/create-plugin` 7.12.3 template still ships Jest 29 and `eslint-webpack-plugin`, so every newly scaffolded plugin hits this.
 - 2026-10-13 – Fix: Jest 29 → 30 (no `micromatch` dependency any more) and `eslint-webpack-plugin` removed from `.config/webpack/webpack.config.ts` (project change to the scaffold config; linting runs via `npm run lint` in CI). `braces`/`micromatch` are gone from the lockfile; validator 0.49.5: exit 0, no errors, code diff and automated review run.
-- 2026-10-13 – Release action defaults to Go 1.25 / Node 20, but `go.mod` requires Go ≥ 1.26.5 → `go-version: '1.26'`, `node-version: '22'` in `release.yml`.
+- 2026-10-13 – Release action defaults to Go 1.25 / Node 20, but `go.mod` requires Go ≥ 1.26.5 → `go-version` and `node-version: '22'` set in `release.yml` (the Go version is now pinned to the exact patch, see below).
 - 2026-10-13 – Lockfiles must be generated so that `npm ci` works with npm 10 (CI, Node 22) and npm 11 (local); after dependency changes run `npx npm@10 install --package-lock-only` and test `npm ci` with both.
 - 2026-10-13 – Branch protection: ruleset "main: PR + green CI" (no force push/deletion, PR required, required check `CI result`, an aggregate job because e2e job names change with the Grafana matrix).
 
@@ -189,3 +199,10 @@ Main risks and limits: execution retention (dashboard range), truncation on high
 - govulncheck source: the validator runs it with `GOTOOLCHAIN=local`, i.e. with the reviewer environment's own Go; its standard-library findings ("update to 1.27.2") depend on that environment, not on the plugin. Locally the source scan is clean with Go 1.26.9 and 1.27.2.
 - Local toolchain note: Homebrew's golangci-lint pulled in Go 1.27.2; gosec cannot read Go 1.27 export data yet → run gosec with `GOTOOLCHAIN=go1.26.9`.
 - CI: new non-required job "Security scan" (gosec + govulncheck), `make security` locally. Released as v1.0.1.
+
+## Maintenance (2026-11-01)
+
+- 2026-11-01 – govulncheck reports GO-2026-6809 (crypto/x509, compromised intermediate certificates) for Go 1.26.9; the plugin calls `x509.Certificate.Verify` through its HTTPS client. – `go.mod` and the release build require Go 1.26.10, `golang.org/x/net` v0.62.0; released as v1.0.3.
+- 2026-11-01 – Dependabot lockfiles drop the nested `@types/react` 18 entries that npm 10 expects, so `npm ci` fails in CI. – Regenerate the lockfile on the Dependabot branch with `npx npm@10 install --package-lock-only`.
+- 2026-11-01 – eslint 10 and `@testing-library/jest-dom` 7 cannot be installed: `eslint-plugin-react` 7.x and `@grafana/plugin-ui` do not accept them as peers yet. – Major updates of both are ignored in `dependabot.yml`.
+- 2026-11-01 – The scaffold's monthly "Create Plugin Update" workflow failed without a `GH_PAT_TOKEN` secret, and would revert the project changes to `.config/` (Jest 30, no `eslint-webpack-plugin`). – Workflow removed; scaffold updates are applied manually.
