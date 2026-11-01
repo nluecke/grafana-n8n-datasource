@@ -34,4 +34,7 @@ jobs:
         with:
           module: ${{ steps.find-module-ts.outputs.modulets }}
           comment-pr: 'no'
-          fail-if-incompatible: 'yes'
+          # Report only: since v1.1.0 the check compares against the minimum grafanaDependency
+          # (13.2.0) and flags any type change of an imported object, e.g. `config` from
+          # @grafana/runtime, even when the fields used are unchanged. e2e covers 13.2 to nightly.
+          fail-if-incompatible: 'no'
