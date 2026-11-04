@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.0.5
+
+- Health check: fixed messages per failure type (TLS, network, PDC, unexpected response, unexpected error) instead of the underlying error text, which could reveal host names, addresses and ports; details go to the server log
+- Query editor: pressing Enter in Metric, Group by, Bucket or Insights bucket without a matching option no longer crashes the editor on Grafana 13.3
+- Reject data source URLs that contain a user name or password
+
 ## 1.0.4
 
 - Rename the API key header constant and the test fake's dummy key so gosec G101 (hardcoded credentials) no longer reports false positives; the plugin validator ignores `#nosec` comments

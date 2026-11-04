@@ -61,6 +61,13 @@ filter. Typical messages:
 - _403_: free trial of n8n Cloud, or the key lacks the `workflow:list` scope.
 - _404 / web page instead of API_: the URL does not end with `/api/v1`.
 - _TLS error_: enable **With CA cert** for internal certificate authorities.
+- _Cannot reach n8n_: the host is not reachable from the Grafana server (or the PDC agent).
+
+The messages do not include the underlying error, so they do not reveal host names, addresses or ports. The
+Grafana server log has the details (`Health check failed`).
+
+The URL must not contain a user name or password (`https://user:password@host/...`): it is stored unencrypted
+and used for the links in query results. Authenticate with the API key.
 
 Provisioning example:
 
