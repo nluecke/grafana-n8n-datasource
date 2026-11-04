@@ -10,7 +10,7 @@
   "info": {
     "description": "Workflow and execution observability for n8n Cloud and self-hosted n8n via the n8n public API (community plugin, not affiliated with n8n GmbH)",
     "author": {
-      "name": "Niklas Luecke",
+      "name": "Niklas Lücke",
       "url": "https://github.com/nluecke"
     },
     "keywords": ["datasource", "n8n", "workflow", "automation", "executions"],
