@@ -35,6 +35,15 @@ const READ_SCOPES = [
   'securityAudit:generate',
 ];
 
+function hasUserInfo(raw: string): boolean {
+  try {
+    const u = new URL(raw);
+    return u.username !== '' || u.password !== '';
+  } catch {
+    return false;
+  }
+}
+
 const getStyles = (theme: GrafanaTheme2) => ({
   code: css({
     fontFamily: theme.typography.fontFamilyMonospace,
@@ -48,7 +57,9 @@ export function ConfigEditor(props: Props) {
   const { jsonData, secureJsonFields, secureJsonData } = options;
   const styles = useStyles2(getStyles);
 
-  const urlInvalid = !!options.url && !URL_PATTERN.test(options.url);
+  const urlBadScheme = !!options.url && !URL_PATTERN.test(options.url);
+  const urlHasCredentials = !!options.url && !urlBadScheme && hasUserInfo(options.url);
+  const urlInvalid = urlBadScheme || urlHasCredentials;
   const urlMissingApiPath = !!options.url && !urlInvalid && !/\/api\/v1\/?$/.test(options.url);
   const maxPages = jsonData.maxPages ?? DEFAULT_MAX_PAGES;
   const maxPagesInvalid = maxPages < 1 || maxPages > MAX_PAGES;
@@ -92,7 +103,13 @@ export function ConfigEditor(props: Props) {
           required
           description="Base URL of the n8n public API, ending with /api/v1."
           invalid={urlInvalid}
-          error={urlInvalid ? 'Must start with http:// or https://' : undefined}
+          error={
+            urlBadScheme
+              ? 'Must start with http:// or https://'
+              : urlHasCredentials
+                ? 'Must not contain a user name or password. Use the API key field below.'
+                : undefined
+          }
         >
           <Input
             id="config-editor-url"

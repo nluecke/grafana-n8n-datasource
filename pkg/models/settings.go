@@ -72,6 +72,10 @@ func (s *PluginSettings) Validate() error {
 	if err != nil || (u.Scheme != "http" && u.Scheme != "https") || u.Host == "" {
 		return errors.New("URL must start with http:// or https://")
 	}
+	// Settings are stored in plain text and the URL is used for links in query results.
+	if u.User != nil {
+		return errors.New("URL must not contain a user name or password; use the API key field for authentication")
+	}
 	if s.Secrets == nil || s.Secrets.ApiKey == "" {
 		return errors.New("API key is missing")
 	}
