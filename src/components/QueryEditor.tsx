@@ -173,6 +173,10 @@ export function QueryEditor({ query, onChange, onRunQuery, datasource }: Props) 
               options={METRICS}
               value={metric}
               onChange={(opt) => {
+                // Combobox passes no option when Enter is pressed without a highlighted entry.
+                if (!opt) {
+                  return;
+                }
                 const groupBy = opt.value !== 'count' && query.groupBy === 'status' ? 'none' : query.groupBy;
                 update({ metric: opt.value, groupBy });
               }}
@@ -184,7 +188,7 @@ export function QueryEditor({ query, onChange, onRunQuery, datasource }: Props) 
               width={20}
               options={groupByOptions}
               value={query.groupBy ?? (metric === 'count' ? 'status' : 'none')}
-              onChange={(opt) => update({ groupBy: opt.value })}
+              onChange={(opt) => opt && update({ groupBy: opt.value })}
             />
           </InlineField>
           <InlineField label="Bucket" labelWidth={10}>
@@ -193,7 +197,7 @@ export function QueryEditor({ query, onChange, onRunQuery, datasource }: Props) 
               width={20}
               options={BUCKETS}
               value={query.bucket ?? 'auto'}
-              onChange={(opt) => update({ bucket: opt.value })}
+              onChange={(opt) => opt && update({ bucket: opt.value })}
             />
           </InlineField>
           {metric === 'duration' && (
@@ -229,7 +233,7 @@ export function QueryEditor({ query, onChange, onRunQuery, datasource }: Props) 
                 width={20}
                 options={INSIGHTS_BUCKETS}
                 value={query.insightsBucket ?? 'auto'}
-                onChange={(opt) => update({ insightsBucket: opt.value })}
+                onChange={(opt) => opt && update({ insightsBucket: opt.value })}
               />
             </InlineField>
           )}

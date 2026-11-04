@@ -207,3 +207,10 @@ Main risks and limits: execution retention (dashboard range), truncation on high
 - 2026-11-01 – eslint 10 cannot be installed: `eslint-plugin-react` 7.x does not accept it as a peer yet. – Major eslint updates are ignored in `dependabot.yml`. `@testing-library/jest-dom` 7 was blocked by `@grafana/plugin-ui` 0.17.8 (peer `^6.9.1`); 0.17.9 requires `^7`, so both were updated together with the Grafana 13.3 packages.
 - 2026-11-01 – The scaffold's monthly "Create Plugin Update" workflow failed without a `GH_PAT_TOKEN` secret, and would revert the project changes to `.config/` (Jest 30, no `eslint-webpack-plugin`). – Workflow removed; scaffold updates are applied manually.
 - 2026-11-01 – Catalog checks on v1.0.3: only gosec G101 ×2 and "unsigned"; the govulncheck source warning is gone. The validator (0.52.1) runs gosec with `-nosec=true`, so `#nosec` comments have no effect. – Constants renamed (`n8n.AuthHeader`, `n8ntest.Key`); gosec with `-nosec=true` reports 0 issues. Released as v1.0.4.
+
+## Catalog review feedback (2026-11-04)
+
+- 2026-11-04 – Manual review of v1.0.4 against a local n8n: works overall, three changes requested.
+- Health check messages appended `err.Error()` / `apiErr.Error()` (hostnames, IPs, ports, transport details). – Fixed message per failure type; the error is logged server-side. Tests assert that no host, port or transport text reaches the message.
+- Grafana 13.3 `Combobox` calls `onChange(undefined)` on Enter when no option matches (it only filters `null`); the Metric, Group by, Bucket and Insights bucket handlers read `opt.value` and crashed the editor. – Handlers skip a missing option. jsdom renders no Combobox options (virtualised list), so the test uses a stand-in that makes the same call.
+- Settings validation accepted URLs with user info, which are stored in plain `jsonData`/`url` and end up in workflow and execution links. – Rejected in `Validate()` and flagged in the config editor. Released as v1.0.5.

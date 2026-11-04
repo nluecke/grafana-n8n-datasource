@@ -1,9 +1,24 @@
 import React from 'react';
 import { act, render, screen, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 
 import { QueryEditor } from './QueryEditor';
 import type { DataSource } from '../datasource';
 import { N8nQuery } from '../types';
+
+// Grafana 13.3's Combobox calls onChange(undefined) when Enter is pressed while no option
+// matches the typed text. jsdom renders no options (virtualised list), so the stand-in
+// reproduces that call directly.
+jest.mock('@grafana/ui', () => ({
+  ...jest.requireActual('@grafana/ui'),
+  Combobox: (props: { 'aria-label'?: string; onChange: (opt: unknown) => void }) => (
+    <input
+      role="combobox"
+      aria-label={props['aria-label']}
+      onKeyDown={(e) => e.key === 'Enter' && props.onChange(undefined)}
+    />
+  ),
+}));
 
 jest.mock('@grafana/runtime', () => ({
   ...jest.requireActual('@grafana/runtime'),
@@ -53,6 +68,38 @@ describe('QueryEditor', () => {
   it('shows the project filter only when projects exist', async () => {
     await setup({ queryType: 'executions' }, [{ value: 'p1', label: 'Default' }]);
     expect(await screen.findByRole('combobox', { name: 'Project' })).toBeInTheDocument();
+  });
+
+  // Enter without a matching option must not crash the editor (see the Combobox stand-in above).
+  // React reports errors from event handlers to window instead of failing the test.
+  const typeAndEnter = async (input: HTMLElement) => {
+    const errors: unknown[] = [];
+    const onError = (e: ErrorEvent) => {
+      errors.push(e.error);
+      e.preventDefault();
+    };
+    window.addEventListener('error', onError);
+    try {
+      await userEvent.type(input, '{Enter}');
+    } finally {
+      window.removeEventListener('error', onError);
+    }
+    expect(errors).toEqual([]);
+  };
+
+  it.each(['Metric', 'Group by', 'Stats bucket'])('ignores Enter without a selected option in %s', async (name) => {
+    const { onChange } = await setup({ queryType: 'executionStats' });
+    const input = combobox(name)!;
+    await typeAndEnter(input);
+    expect(onChange).not.toHaveBeenCalled();
+    expect(combobox(name)).toBeInTheDocument();
+  });
+
+  it('ignores Enter without a selected option in the insights bucket', async () => {
+    const { onChange } = await setup({ queryType: 'insights', insightsMode: 'timeseries' });
+    const input = combobox('Bucket')!;
+    await typeAndEnter(input);
+    expect(onChange).not.toHaveBeenCalled();
   });
 
   it('does not show the project filter without projects', async () => {
