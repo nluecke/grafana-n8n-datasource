@@ -28,6 +28,9 @@ func (d *Datasource) CheckHealth(ctx context.Context, _ *backend.CheckHealthRequ
 
 	err := d.client.Get(ctx, "/workflows", url.Values{"limit": {"1"}}, nil)
 	if err != nil {
+		// The details stay in the server log; the message shown in the UI is fixed per
+		// failure type so it does not reveal hostnames, addresses or transport details.
+		backend.Logger.FromContext(ctx).Warn("Health check failed", "error", err)
 		return healthError(describeHealthError(err, d.settings.URL, d.settings.EnableSecureSocksProxy)), nil
 	}
 
@@ -70,7 +73,7 @@ func describeHealthError(err error, baseURL string, viaPDC bool) string {
 		case http.StatusTooManyRequests:
 			return "n8n is rate limiting requests (429). Try again later."
 		}
-		return fmt.Sprintf("Unexpected response from n8n: %s", apiErr.Error())
+		return fmt.Sprintf("Unexpected response from n8n (HTTP %d). Check the URL and the n8n server logs.", apiErr.StatusCode)
 	}
 
 	if errors.Is(err, n8n.ErrNotJSON) {
@@ -78,7 +81,7 @@ func describeHealthError(err error, baseURL string, viaPDC bool) string {
 	}
 
 	if errors.Is(err, n8n.ErrNotAllowed) {
-		return err.Error()
+		return "The request was blocked because the n8n client only sends read requests."
 	}
 
 	var unknownAuth x509.UnknownAuthorityError
@@ -86,8 +89,8 @@ func describeHealthError(err error, baseURL string, viaPDC bool) string {
 	var hostErr x509.HostnameError
 	if errors.As(err, &unknownAuth) || errors.As(err, &certInvalid) || errors.As(err, &hostErr) ||
 		strings.Contains(err.Error(), "x509:") || strings.Contains(err.Error(), "tls:") {
-		return "TLS error while connecting to n8n: " + err.Error() +
-			". For an internal CA enable \"With CA cert\" and paste the CA certificate."
+		return "TLS error while connecting to n8n: the server certificate could not be verified. " +
+			"For an internal CA enable \"With CA cert\" and paste the CA certificate."
 	}
 
 	if errors.Is(err, context.DeadlineExceeded) {
@@ -97,13 +100,13 @@ func describeHealthError(err error, baseURL string, viaPDC bool) string {
 	var netErr net.Error
 	var urlErr *url.Error
 	if viaPDC && (errors.As(err, &netErr) || errors.As(err, &urlErr)) {
-		return "Cannot reach n8n through Private Data Source Connect: " + err.Error() +
-			". Check that the PDC agent is running and can reach the n8n URL from its network."
+		return "Cannot reach n8n through Private Data Source Connect. " +
+			"Check that the PDC agent is running and can reach the n8n URL from its network."
 	}
 	if errors.As(err, &netErr) || errors.As(err, &urlErr) {
-		return "Cannot reach n8n: " + err.Error() +
-			". Grafana Cloud cannot reach hosts on private networks; use a public URL or Private Data Source Connect."
+		return "Cannot reach n8n. Check the URL and that Grafana can reach the host. " +
+			"Grafana Cloud cannot reach hosts on private networks; use a public URL or Private Data Source Connect."
 	}
 
-	return "Unexpected error: " + err.Error()
+	return "Unexpected error while connecting to n8n. See the Grafana server log for details."
 }

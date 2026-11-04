@@ -6,6 +6,7 @@ import (
 	"encoding/pem"
 	"net/http"
 	"net/http/httptest"
+	neturl "net/url"
 	"testing"
 
 	"github.com/grafana/grafana-plugin-sdk-go/backend"
@@ -108,6 +109,8 @@ func TestCheckHealthSettingsErrors(t *testing.T) {
 		{"missing url", "", nil, map[string]string{"apiKey": testAPIKey}, "URL is missing"},
 		{"bad scheme", "ftp://n8n", nil, map[string]string{"apiKey": testAPIKey}, "http:// or https://"},
 		{"missing key", "http://n8n:5678/api/v1", nil, nil, "API key is missing"},
+		{"user info", "https://user:secret@n8n/api/v1", nil, map[string]string{"apiKey": testAPIKey}, "must not contain a user name or password"},
+		{"user only", "https://user@n8n/api/v1", nil, map[string]string{"apiKey": testAPIKey}, "must not contain a user name or password"},
 		{"missing ca", "https://n8n/api/v1", map[string]any{"tlsAuthWithCACert": true}, map[string]string{"apiKey": testAPIKey}, "CA certificate is missing"},
 	}
 	for _, tc := range cases {
@@ -128,6 +131,7 @@ func TestCheckHealthTLS(t *testing.T) {
 		res := checkHealth(t, newTestDatasource(t, srv.URL+"/api/v1", nil, secure))
 		require.Equal(t, backend.HealthStatusError, res.Status)
 		require.Contains(t, res.Message, "With CA cert")
+		requireNoTransportDetails(t, res.Message, srv.URL)
 	})
 
 	t.Run("skip verify", func(t *testing.T) {
@@ -151,11 +155,36 @@ func TestCheckHealthUnreachable(t *testing.T) {
 	require.Equal(t, backend.HealthStatusError, res.Status)
 	require.Contains(t, res.Message, "Cannot reach n8n")
 	require.Contains(t, res.Message, "use a public URL or Private Data Source Connect")
+	requireNoTransportDetails(t, res.Message, url)
 
 	// With PDC enabled (but not configured in Grafana, so the request goes direct)
 	// the message points to the PDC agent instead.
 	res = checkHealth(t, newTestDatasource(t, url+"/api/v1", map[string]any{"enableSecureSocksProxy": true}, map[string]string{"apiKey": testAPIKey}))
 	require.Contains(t, res.Message, "through Private Data Source Connect")
+	requireNoTransportDetails(t, res.Message, url)
+}
+
+// Health messages are shown to every user who can edit the data source; they must
+// not echo upstream error text, hosts, addresses or ports.
+func requireNoTransportDetails(t *testing.T, msg, rawURL string) {
+	t.Helper()
+	u, err := neturl.Parse(rawURL)
+	require.NoError(t, err)
+	require.NotContains(t, msg, u.Host)
+	require.NotContains(t, msg, u.Hostname())
+	for _, s := range []string{"dial tcp", "connection refused", "x509:", "tls:"} {
+		require.NotContains(t, msg, s)
+	}
+}
+
+func TestCheckHealthUnexpectedResponse(t *testing.T) {
+	srv := httptest.NewServer(fakeN8n{status: 500, contentType: "application/json", body: `{"message":"db at 10.0.0.5:5432 refused"}`})
+	defer srv.Close()
+	res := checkHealth(t, newTestDatasource(t, srv.URL+"/api/v1", nil, map[string]string{"apiKey": testAPIKey}))
+	require.Equal(t, backend.HealthStatusError, res.Status)
+	require.Contains(t, res.Message, "Unexpected response from n8n (HTTP 500)")
+	require.NotContains(t, res.Message, "10.0.0.5")
+	requireNoTransportDetails(t, res.Message, srv.URL)
 }
 
 // A health check must test the live connection, not a cached answer.
