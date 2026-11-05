@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.0.6
+
+- First signed release (community signature); no code changes
+
 ## 1.0.5
 
 - Health check: fixed messages per failure type (TLS, network, PDC, unexpected response, unexpected error) instead of the underlying error text, which could reveal host names, addresses and ports; details go to the server log
