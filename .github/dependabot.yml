@@ -21,6 +21,9 @@ updates:
       # Keep the Node types on the Node major that CI and the release build run on (22).
       - dependency-name: '@types/node'
         update-types: ['version-update:semver-major']
+      # typescript-eslint 8.x accepts TypeScript below 6.1 (peer); revisit major updates when it supports them.
+      - dependency-name: 'typescript'
+        update-types: ['version-update:semver-major']
     groups:
       unit-test:
         patterns:
