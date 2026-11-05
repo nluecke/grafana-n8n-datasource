@@ -18,6 +18,9 @@ updates:
       # eslint-plugin-react 7.x (required by @grafana/eslint-config) has no eslint 10 peer support yet.
       - dependency-name: 'eslint'
         update-types: ['version-update:semver-major']
+      # Keep the Node types on the Node major that CI and the release build run on (22).
+      - dependency-name: '@types/node'
+        update-types: ['version-update:semver-major']
     groups:
       unit-test:
         patterns:
