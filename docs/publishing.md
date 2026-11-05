@@ -25,12 +25,15 @@ instances, so it is not used.
 - [x] v1.0.0 submitted; automated checks flagged Go/x-net vulnerabilities and gosec false positives, fixed in
       v1.0.2 (v1.0.1 is a tag without release).
 - [x] v1.0.2 released and the submission updated (texts and checksums: `docs/catalog-submission.md`).
-- [ ] v1.0.3 (Go 1.26.10 for GO-2026-6809, golang.org/x/net v0.62.0): release, verify, update the submission.
-- [ ] Wait for Grafana's review.
+- [x] v1.0.3 (Go 1.26.10 for GO-2026-6809, golang.org/x/net v0.62.0) and v1.0.4 (gosec G101 false
+      positives) released; automated checks then only reported "unsigned plugin".
+- [x] Manual review of v1.0.4: health check messages, query editor crash on Grafana 13.3, URLs with
+      credentials. Fixed in v1.0.5; approved for signing on 2026-11-05.
 
 ## After approval
 
-1. [ ] `gh variable set SIGN_PLUGIN --body true -R nluecke/grafana-n8n-datasource`, then release a signed version.
+1. [x] `gh variable set SIGN_PLUGIN --body true -R nluecke/grafana-n8n-datasource` (set 2026-11-05).
+   - [ ] release the signed v1.0.6, verify the signature and update the submission with the signed archive.
 2. [ ] Install the plugin from the catalog on `nluecke.grafana.net` and test:
    - [ ] data source against an n8n reachable from Grafana Cloud (n8n Cloud, or self-hosted with a public URL),
    - [ ] self-hosted n8n on a private network through Private Data Source Connect (PDC agent next to n8n,
