@@ -33,7 +33,8 @@ instances, so it is not used.
 ## After approval
 
 1. [x] `gh variable set SIGN_PLUGIN --body true -R nluecke/grafana-n8n-datasource` (set 2026-11-05).
-   - [ ] release the signed v1.0.6, verify the signature and update the submission with the signed archive.
+   - [x] signed v1.0.6 released (community signature, verified in Grafana 13.3) and submitted.
+   - [x] published in the catalog on 2026-11-06: https://grafana.com/grafana/plugins/nluecke-n8n-datasource/
 2. [ ] Install the plugin from the catalog on `nluecke.grafana.net` and test:
    - [ ] data source against an n8n reachable from Grafana Cloud (n8n Cloud, or self-hosted with a public URL),
    - [ ] self-hosted n8n on a private network through Private Data Source Connect (PDC agent next to n8n,

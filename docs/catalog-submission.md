@@ -1,12 +1,13 @@
 # Catalog submission – prepared texts
 
-Fields for grafana.com → _My Plugins_ → _Submit plugin_, filled in for the version currently under review.
+Fields for grafana.com → _My Plugins_ → _Submit plugin_, filled in for the published version.
+Published on 2026-11-06: https://grafana.com/grafana/plugins/nluecke-n8n-datasource/
 
 - **Plugin ID:** `nluecke-n8n-datasource`
-- **Archive URL:** `https://github.com/nluecke/grafana-n8n-datasource/releases/download/v1.0.5/nluecke-n8n-datasource-1.0.5.zip`
-- **SHA1:** `63913fc607cd72ac043cceeed2c8e9427733b6e0` (also in `nluecke-n8n-datasource-1.0.5.zip.sha1` of the release)
-- **Source code URL:** `https://github.com/nluecke/grafana-n8n-datasource` (tag `v1.0.5`, commit `3251f22`)
-- **Provenance:** build attestation for the archive (`gh attestation verify nluecke-n8n-datasource-1.0.5.zip --repo nluecke/grafana-n8n-datasource`)
+- **Archive URL:** `https://github.com/nluecke/grafana-n8n-datasource/releases/download/v1.0.6/nluecke-n8n-datasource-1.0.6.zip`
+- **SHA1:** `638804313092243f8d9732cdee35697e40579f3a` (also in `nluecke-n8n-datasource-1.0.6.zip.sha1` of the release)
+- **Source code URL:** `https://github.com/nluecke/grafana-n8n-datasource` (tag `v1.0.6`, commit `6805fc6`)
+- **Provenance:** build attestation for the archive (`gh attestation verify nluecke-n8n-datasource-1.0.6.zip --repo nluecke/grafana-n8n-datasource`)
 
 ## Testing guidance for reviewers
 
@@ -32,5 +33,5 @@ under Settings → n8n API, and configure the data source with URL `http://<host
   `pkg/n8n/client.go`.
 - Private Data Source Connect is supported through the SDK HTTP client and was tested locally with a SOCKS5
   proxy (`make pdc`).
-- `@grafana/plugin-validator` on the v1.0.5 archive with gosec and govulncheck: exit 0, gosec reports no issues (also with `-nosec=true`). Remaining warnings: "unsigned plugin" and, only with a local Go 1.27.2 toolchain, the govulncheck source scan, which runs with the environment's own Go (not reported by the catalog checks for v1.0.4). All binaries built with Go 1.26.10; govulncheck binary scan clean.
+- Community signature (org `nluecke`) since v1.0.6, signed in the release workflow; Grafana 13.3 reports the signature as valid. Catalog checks for v1.0.6: "Success" without warnings. v1.0.6 has the same code as v1.0.5, which passed the manual review. All binaries built with Go 1.26.10; govulncheck binary scan clean.
 - Community plugin, not affiliated with n8n GmbH; the plugin does not use n8n's logo.

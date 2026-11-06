@@ -214,3 +214,8 @@ Main risks and limits: execution retention (dashboard range), truncation on high
 - Health check messages appended `err.Error()` / `apiErr.Error()` (hostnames, IPs, ports, transport details). – Fixed message per failure type; the error is logged server-side. Tests assert that no host, port or transport text reaches the message.
 - Grafana 13.3 `Combobox` calls `onChange(undefined)` on Enter when no option matches (it only filters `null`); the Metric, Group by, Bucket and Insights bucket handlers read `opt.value` and crashed the editor. – Handlers skip a missing option. jsdom renders no Combobox options (virtualised list), so the test uses a stand-in that makes the same call.
 - Settings validation accepted URLs with user info, which are stored in plain `jsonData`/`url` and end up in workflow and execution links. – Rejected in `Validate()` and flagged in the config editor. Released as v1.0.5.
+
+## Publication (2026-11-06)
+
+- 2026-11-05 – Approved for signing. `SIGN_PLUGIN=true`; v1.0.6 (same code as v1.0.5) released with a community signature; catalog checks "Success".
+- 2026-11-06 – Published in the Grafana plugin catalog: https://grafana.com/grafana/plugins/nluecke-n8n-datasource/
