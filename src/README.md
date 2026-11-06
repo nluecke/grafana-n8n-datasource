@@ -32,6 +32,15 @@ scraping and no database access are needed.
 - Grafana must reach n8n over the network. Grafana Cloud cannot reach n8n on a private network directly;
   use a public URL or [Private Data Source Connect](https://grafana.com/docs/grafana-cloud/connect-externally-hosted/private-data-source-connect/).
 
+## Installation
+
+Install the plugin from the [Grafana plugin catalog](https://grafana.com/grafana/plugins/nluecke-n8n-datasource/):
+
+- **Grafana Cloud and Grafana 13:** _Administration → Plugins and data → Plugins_, search for "n8n", **Install**.
+- **CLI:** `grafana cli plugins install nluecke-n8n-datasource`, then restart Grafana.
+
+Then add a data source of type **n8n** under _Connections → Data sources_.
+
 ## Create an API key
 
 In n8n open **Settings → n8n API → Create an API key**. Use a dedicated n8n user for Grafana and give
