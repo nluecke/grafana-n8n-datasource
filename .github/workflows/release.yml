@@ -21,7 +21,7 @@ jobs:
         with:
           persist-credentials: false
 
-      - uses: grafana/plugin-actions/build-plugin@build-plugin/v1.2.1
+      - uses: grafana/plugin-actions/build-plugin@build-plugin/v2.0.0
         with:
           # Community signature once the plugin is approved for the catalog and the repository
           # variable SIGN_PLUGIN is true; until then the archive stays unsigned (first submission).
