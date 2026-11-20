@@ -1,6 +1,6 @@
 module github.com/nluecke/grafana-n8n-datasource
 
-go 1.26.10
+go 1.26.11
 
 require (
 	github.com/grafana/dsconfig/schema v0.0.13
