@@ -26,10 +26,31 @@ const (
 	GroupByStatus   = "status"
 	GroupByWorkflow = "workflow"
 
-	maxBuckets = 2000
+	// maxBuckets caps the buckets of a time series. Executions are discrete events: with
+	// Grafana's default interval (about one bucket per pixel, e.g. in Explore) most buckets
+	// hold zero or one execution and charts turn into stripes.
+	maxBuckets = 150
 )
 
+// niceIntervals are the bucket sizes used when the requested interval is too fine.
+var niceIntervals = []time.Duration{
+	time.Minute, 2 * time.Minute, 5 * time.Minute, 10 * time.Minute, 15 * time.Minute, 30 * time.Minute,
+	time.Hour, 2 * time.Hour, 3 * time.Hour, 6 * time.Hour, 12 * time.Hour, 24 * time.Hour,
+}
+
 var defaultPercentiles = []float64{50, 90, 99}
+
+// statusColors gives status series fixed colours, so Explore and panels without
+// overrides do not show errors in green. Same colours as the bundled dashboard.
+var statusColors = map[string]string{
+	"success":  "green",
+	"error":    "red",
+	"crashed":  "dark-red",
+	"canceled": "gray",
+	"running":  "blue",
+	"waiting":  "yellow",
+	"new":      "purple",
+}
 
 // failedStatuses count as failures for success and error rates. Executions that
 // are still running or were canceled are not counted.
@@ -70,8 +91,19 @@ func newBuckets(tr backend.TimeRange, interval time.Duration) buckets {
 	if interval < time.Second {
 		interval = time.Minute
 	}
-	for tr.To.Sub(tr.From)/interval > maxBuckets {
-		interval *= 2
+	span := tr.To.Sub(tr.From)
+	if span/interval > maxBuckets {
+		// Smallest nice interval that fits; beyond one day, multiples of the largest one.
+		interval = niceIntervals[len(niceIntervals)-1]
+		for _, n := range niceIntervals {
+			if span/n <= maxBuckets {
+				interval = n
+				break
+			}
+		}
+		for span/interval > maxBuckets {
+			interval *= 2
+		}
 	}
 	start := tr.From.Truncate(interval)
 	n := int(tr.To.Sub(start)/interval) + 1
@@ -189,7 +221,11 @@ func buildStatsFrames(execs []n8n.Execution, workflows map[string]n8n.Workflow, 
 		s := groups[k]
 		switch metric {
 		case MetricCount:
-			frames = append(frames, valueFrame(times, s, "executions", s.name, "short", countValues(s.execs)))
+			f := valueFrame(times, s, "executions", s.name, "short", countValues(s.execs))
+			if c, ok := statusColors[s.labels["status"]]; ok && groupBy == GroupByStatus {
+				f.Fields[1].Config.Color = map[string]any{"mode": "fixed", "fixedColor": c}
+			}
+			frames = append(frames, f)
 		case MetricSuccessRate:
 			frames = append(frames, valueFrame(times, s, "successRate", s.name, "percentunit", rateValues(s.execs, false)))
 		case MetricErrorRate:
