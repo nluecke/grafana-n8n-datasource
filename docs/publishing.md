@@ -16,8 +16,8 @@ instances, so it is not used.
 - [x] Release workflow builds the archive with build provenance attestation and creates a draft release.
       Release tags `v*` are immutable: a failed release needs a new version.
 - [x] Own neutral logo (`src/img/logo.svg`). n8n's brand guidelines (https://n8n.io/brandguidelines/) grant
-      no usage rights; permission requested separately. If granted, keep n8n's rules (unmodified, min. 100 px
-      wide, clear space).
+      no usage rights; permission requested from license@n8n.io on 2026-11-16, no answer yet. If granted,
+      keep n8n's rules (unmodified, min. 100 px wide, clear space).
 - [x] Disclaimer "not affiliated with n8n GmbH" in README and plugin description; screenshots without load-test data.
 
 ## Catalog submission
