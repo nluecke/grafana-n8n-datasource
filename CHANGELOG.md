@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.0.7
+
+- Security: built with Go 1.26.11 (GO-2026-6859, net/http) and klauspost/compress v1.20.2 (GO-2026-6865)
+- Execution stats: automatic time buckets are capped at 150 and rounded up to standard intervals (1m, 5m, 15m, 1h, …), so charts in Explore and in panels without _Max data points_ no longer turn into thin stripes. Panels with _Whole range_ buckets and the bundled dashboard are unchanged
+- Execution stats: series grouped by status have fixed colours (success green, error red, crashed dark red, canceled grey, …), also without panel overrides
+- Bundled dashboard _n8n Workflow Executions (API)_ redesigned: value-coloured stat tiles, ranked bar gauges for top failing workflows and error rate per workflow, smooth duration percentiles on a logarithmic axis, readable table columns. Existing installations: re-import it on the data source's **Dashboards** tab
+- Catalog page: shorter overview; configuration, query types, troubleshooting and limitations moved to [docs/guide](https://github.com/nluecke/grafana-n8n-datasource/tree/main/docs/guide); new screenshots including the query editor in Explore
+- Dependencies: grafana-plugin-sdk-go 0.299.0, Grafana packages 13.3.1, @grafana/plugin-ui 0.18.0; release built with build-plugin 2.0.1
+
 ## 1.0.6
 
 - First signed release (community signature); no code changes

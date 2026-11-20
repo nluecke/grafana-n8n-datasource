@@ -11,3 +11,9 @@
 | Audit           | n8n security audit report                                                                  | –                                                                                                    |
 
 Success rate = success / (success + error + crashed). Running, waiting and canceled executions are not counted.
+
+Execution stats time series use the panel interval, but at most 150 buckets per query: finer intervals are rounded
+up to 1m, 2m, 5m, 10m, 15m, 30m, 1h, 2h, 3h, 6h, 12h, 1d or multiples of a day (e.g. 12 h → 5 min, 24 h → 10 min,
+7 days → 2 h). Executions are individual events, so finer buckets would mostly hold zero or one execution.
+Series grouped by status have fixed colours (success green, error red, crashed dark red, canceled grey, running blue,
+waiting yellow, new purple); panel overrides still take precedence.
