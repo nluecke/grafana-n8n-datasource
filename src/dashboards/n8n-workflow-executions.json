@@ -77,7 +77,7 @@
         "uid": "${datasource}"
       },
       "gridPos": {
-        "h": 3,
+        "h": 4,
         "w": 4,
         "x": 0,
         "y": 1
@@ -115,10 +115,10 @@
         "overrides": []
       },
       "options": {
-        "colorMode": "background",
+        "colorMode": "value",
         "graphMode": "none",
-        "justifyMode": "auto",
-        "textMode": "auto",
+        "justifyMode": "center",
+        "textMode": "value",
         "wideLayout": true,
         "showPercentChange": false,
         "reduceOptions": {
@@ -138,7 +138,7 @@
         "uid": "${datasource}"
       },
       "gridPos": {
-        "h": 3,
+        "h": 4,
         "w": 4,
         "x": 4,
         "y": 1
@@ -185,10 +185,10 @@
         "overrides": []
       },
       "options": {
-        "colorMode": "background",
+        "colorMode": "value",
         "graphMode": "none",
-        "justifyMode": "auto",
-        "textMode": "auto",
+        "justifyMode": "center",
+        "textMode": "value",
         "wideLayout": true,
         "showPercentChange": false,
         "reduceOptions": {
@@ -208,7 +208,7 @@
         "uid": "${datasource}"
       },
       "gridPos": {
-        "h": 3,
+        "h": 4,
         "w": 4,
         "x": 8,
         "y": 1
@@ -251,10 +251,10 @@
         "overrides": []
       },
       "options": {
-        "colorMode": "background",
+        "colorMode": "value",
         "graphMode": "none",
-        "justifyMode": "auto",
-        "textMode": "auto",
+        "justifyMode": "center",
+        "textMode": "value",
         "wideLayout": true,
         "showPercentChange": false,
         "reduceOptions": {
@@ -268,13 +268,13 @@
       "type": "stat",
       "id": 5,
       "title": "p90 duration",
-      "description": "",
+      "description": "90 % of the finished executions in the time range took at most this long.",
       "datasource": {
         "type": "nluecke-n8n-datasource",
         "uid": "${datasource}"
       },
       "gridPos": {
-        "h": 3,
+        "h": 4,
         "w": 4,
         "x": 12,
         "y": 1
@@ -304,7 +304,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "blue",
+                "color": "purple",
                 "value": null
               }
             ]
@@ -313,10 +313,10 @@
         "overrides": []
       },
       "options": {
-        "colorMode": "background",
+        "colorMode": "value",
         "graphMode": "none",
-        "justifyMode": "auto",
-        "textMode": "auto",
+        "justifyMode": "center",
+        "textMode": "value",
         "wideLayout": true,
         "showPercentChange": false,
         "reduceOptions": {
@@ -330,13 +330,13 @@
       "type": "stat",
       "id": 6,
       "title": "Running now",
-      "description": "",
+      "description": "Executions that are running or waiting.",
       "datasource": {
         "type": "nluecke-n8n-datasource",
         "uid": "${datasource}"
       },
       "gridPos": {
-        "h": 3,
+        "h": 4,
         "w": 4,
         "x": 16,
         "y": 1
@@ -379,10 +379,10 @@
         "overrides": []
       },
       "options": {
-        "colorMode": "background",
+        "colorMode": "value",
         "graphMode": "none",
-        "justifyMode": "auto",
-        "textMode": "auto",
+        "justifyMode": "center",
+        "textMode": "value",
         "wideLayout": true,
         "showPercentChange": false,
         "reduceOptions": {
@@ -402,7 +402,7 @@
         "uid": "${datasource}"
       },
       "gridPos": {
-        "h": 3,
+        "h": 4,
         "w": 4,
         "x": 20,
         "y": 1
@@ -428,7 +428,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "blue",
+                "color": "text",
                 "value": null
               }
             ]
@@ -437,10 +437,10 @@
         "overrides": []
       },
       "options": {
-        "colorMode": "background",
+        "colorMode": "value",
         "graphMode": "none",
-        "justifyMode": "auto",
-        "textMode": "auto",
+        "justifyMode": "center",
+        "textMode": "value",
         "wideLayout": true,
         "showPercentChange": false,
         "reduceOptions": {
@@ -488,7 +488,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 4
+        "y": 5
       },
       "panels": []
     },
@@ -505,9 +505,9 @@
         "h": 9,
         "w": 12,
         "x": 0,
-        "y": 5
+        "y": 6
       },
-      "maxDataPoints": 100,
+      "maxDataPoints": 60,
       "targets": [
         {
           "refId": "A",
@@ -529,14 +529,20 @@
           },
           "custom": {
             "drawStyle": "bars",
-            "fillOpacity": 80,
-            "lineWidth": 1,
+            "fillOpacity": 85,
+            "gradientMode": "none",
+            "lineWidth": 0,
+            "lineInterpolation": "smooth",
+            "barAlignment": 0,
+            "barWidthFactor": 0.8,
             "stacking": {
               "mode": "normal",
               "group": "A"
             },
+            "axisSoftMin": 0,
+            "axisBorderShow": false,
             "spanNulls": false,
-            "showPoints": "auto"
+            "showPoints": "never"
           }
         },
         "overrides": [
@@ -678,7 +684,7 @@
       "type": "timeseries",
       "id": 10,
       "title": "Execution duration percentiles",
-      "description": "",
+      "description": "Logarithmic axis: single long-running executions do not flatten the typical durations.",
       "datasource": {
         "type": "nluecke-n8n-datasource",
         "uid": "${datasource}"
@@ -687,9 +693,9 @@
         "h": 9,
         "w": 12,
         "x": 12,
-        "y": 5
+        "y": 6
       },
-      "maxDataPoints": 100,
+      "maxDataPoints": 60,
       "targets": [
         {
           "refId": "A",
@@ -712,17 +718,72 @@
           },
           "custom": {
             "drawStyle": "line",
-            "fillOpacity": 0,
-            "lineWidth": 1,
+            "fillOpacity": 15,
+            "gradientMode": "opacity",
+            "lineWidth": 2,
+            "lineInterpolation": "smooth",
+            "barAlignment": 0,
+            "barWidthFactor": 0.8,
             "stacking": {
               "mode": "none",
               "group": "A"
             },
+            "scaleDistribution": {
+              "type": "log",
+              "log": 10
+            },
+            "axisBorderShow": false,
             "spanNulls": false,
-            "showPoints": "auto"
+            "showPoints": "never"
           }
         },
-        "overrides": []
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "p50"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "super-light-purple"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "p90"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "purple"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "p99"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "dark-purple"
+                }
+              }
+            ]
+          }
+        ]
       },
       "options": {
         "legend": {
@@ -745,24 +806,24 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 14
+        "y": 15
       },
       "panels": []
     },
     {
-      "type": "table",
+      "type": "bargauge",
       "id": 12,
       "title": "Top failing workflows",
-      "description": "",
+      "description": "Workflows with the most failed or crashed executions in the time range.",
       "datasource": {
         "type": "nluecke-n8n-datasource",
         "uid": "${datasource}"
       },
       "gridPos": {
-        "h": 9,
+        "h": 8,
         "w": 12,
         "x": 0,
-        "y": 15
+        "y": 16
       },
       "targets": [
         {
@@ -820,75 +881,65 @@
         {
           "id": "limit",
           "options": {
-            "limitField": 10
-          }
-        },
-        {
-          "id": "organize",
-          "options": {
-            "renameByName": {
-              "Field": "Workflow",
-              "Last *": "Failed executions"
-            }
+            "limitField": 8
           }
         }
       ],
       "fieldConfig": {
         "defaults": {
-          "custom": {
-            "align": "auto",
-            "filterable": true
-          }
-        },
-        "overrides": [
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "Failed executions"
-            },
-            "properties": [
+          "unit": "short",
+          "min": 0,
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
               {
-                "id": "custom.cellOptions",
-                "value": {
-                  "type": "gauge",
-                  "mode": "basic"
-                }
-              },
-              {
-                "id": "color",
-                "value": {
-                  "mode": "fixed",
-                  "fixedColor": "red"
-                }
+                "color": "red",
+                "value": null
               }
             ]
           }
-        ]
+        },
+        "overrides": []
       },
       "options": {
-        "showHeader": true,
-        "cellHeight": "sm",
-        "footer": {
-          "show": false
+        "displayMode": "gradient",
+        "orientation": "horizontal",
+        "valueMode": "color",
+        "namePlacement": "left",
+        "showUnfilled": true,
+        "sizing": "manual",
+        "minVizHeight": 16,
+        "maxVizHeight": 18,
+        "minVizWidth": 8,
+        "text": {
+          "titleSize": 13,
+          "valueSize": 14
+        },
+        "reduceOptions": {
+          "calcs": ["lastNotNull"],
+          "fields": "/^Last/",
+          "values": true
         }
       }
     },
     {
-      "type": "timeseries",
+      "type": "bargauge",
       "id": 13,
       "title": "Error rate by workflow",
-      "description": "Buckets without finished executions are left empty.",
+      "description": "(error + crashed) / finished executions per workflow in the time range.",
       "datasource": {
         "type": "nluecke-n8n-datasource",
         "uid": "${datasource}"
       },
       "gridPos": {
-        "h": 9,
+        "h": 8,
         "w": 12,
         "x": 12,
-        "y": 15
+        "y": 16
       },
-      "maxDataPoints": 100,
       "targets": [
         {
           "refId": "A",
@@ -899,40 +950,102 @@
           "workflowIds": ["$workflow"],
           "queryType": "executionStats",
           "metric": "errorRate",
-          "groupBy": "workflow"
+          "groupBy": "workflow",
+          "bucket": "range"
+        }
+      ],
+      "transformations": [
+        {
+          "id": "reduce",
+          "options": {
+            "reducers": ["lastNotNull"],
+            "mode": "seriesToRows",
+            "includeTimeField": false
+          }
+        },
+        {
+          "id": "filterByValue",
+          "options": {
+            "type": "exclude",
+            "match": "any",
+            "filters": [
+              {
+                "fieldName": "Last *",
+                "config": {
+                  "id": "lowerOrEqual",
+                  "options": {
+                    "value": 0
+                  }
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "sortBy",
+          "options": {
+            "sort": [
+              {
+                "field": "Last *",
+                "desc": true
+              }
+            ]
+          }
+        },
+        {
+          "id": "limit",
+          "options": {
+            "limitField": 8
+          }
         }
       ],
       "fieldConfig": {
         "defaults": {
           "unit": "percentunit",
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "drawStyle": "line",
-            "fillOpacity": 0,
-            "lineWidth": 1,
-            "stacking": {
-              "mode": "none",
-              "group": "A"
-            },
-            "spanNulls": false,
-            "showPoints": "auto"
-          },
           "min": 0,
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "orange",
+                "value": 0.05
+              },
+              {
+                "color": "red",
+                "value": 0.2
+              }
+            ]
+          },
+          "decimals": 1,
           "max": 1
         },
         "overrides": []
       },
       "options": {
-        "legend": {
-          "displayMode": "list",
-          "placement": "bottom",
-          "showLegend": true
+        "displayMode": "gradient",
+        "orientation": "horizontal",
+        "valueMode": "color",
+        "namePlacement": "left",
+        "showUnfilled": true,
+        "sizing": "manual",
+        "minVizHeight": 16,
+        "maxVizHeight": 18,
+        "minVizWidth": 8,
+        "text": {
+          "titleSize": 13,
+          "valueSize": 14
         },
-        "tooltip": {
-          "mode": "multi",
-          "sort": "desc"
+        "reduceOptions": {
+          "calcs": ["lastNotNull"],
+          "fields": "/^Last/",
+          "values": true
         }
       }
     },
@@ -984,6 +1097,13 @@
               "workflowId": true,
               "url": true,
               "mode": true
+            },
+            "renameByName": {
+              "workflow": "Workflow",
+              "status": "Status",
+              "startedAt": "Started",
+              "stoppedAt": "Stopped",
+              "retryOf": "Retry of"
             }
           }
         }
@@ -999,7 +1119,7 @@
           {
             "matcher": {
               "id": "byName",
-              "options": "status"
+              "options": "Status"
             },
             "properties": [
               {
@@ -1183,14 +1303,18 @@
       "options": {
         "colorMode": "value",
         "graphMode": "none",
-        "justifyMode": "auto",
-        "textMode": "auto",
+        "justifyMode": "center",
+        "textMode": "value_and_name",
         "wideLayout": true,
         "showPercentChange": false,
         "reduceOptions": {
           "calcs": ["lastNotNull"],
           "fields": "",
           "values": false
+        },
+        "text": {
+          "titleSize": 14,
+          "valueSize": 30
         }
       },
       "transformations": [
@@ -1245,14 +1369,20 @@
           },
           "custom": {
             "drawStyle": "bars",
-            "fillOpacity": 80,
-            "lineWidth": 1,
+            "fillOpacity": 85,
+            "gradientMode": "none",
+            "lineWidth": 0,
+            "lineInterpolation": "smooth",
+            "barAlignment": 0,
+            "barWidthFactor": 0.8,
             "stacking": {
               "mode": "none",
               "group": "A"
             },
+            "axisSoftMin": 0,
+            "axisBorderShow": false,
             "spanNulls": false,
-            "showPoints": "auto"
+            "showPoints": "never"
           }
         },
         "overrides": [
@@ -1334,7 +1464,7 @@
       "type": "table",
       "id": 20,
       "title": "Workflows",
-      "description": "Click a workflow name to open it in n8n. 'skipsSuccessfulExecutions' marks workflows whose success rate cannot be computed.",
+      "description": "Click a workflow name to open it in n8n. 'Skips successful executions' marks workflows whose success rate cannot be computed.",
       "datasource": {
         "type": "nluecke-n8n-datasource",
         "uid": "${datasource}"
@@ -1362,7 +1492,17 @@
           "options": {
             "excludeByName": {
               "url": true,
-              "projectId": true
+              "projectId": true,
+              "id": true
+            },
+            "renameByName": {
+              "active": "Active",
+              "archived": "Archived",
+              "tags": "Tags",
+              "triggerCount": "Triggers",
+              "skipsSuccessfulExecutions": "Skips successful executions",
+              "createdAt": "Created",
+              "updatedAt": "Updated"
             }
           }
         }
@@ -1374,7 +1514,110 @@
             "filterable": true
           }
         },
-        "overrides": []
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Active"
+            },
+            "properties": [
+              {
+                "id": "custom.cellOptions",
+                "value": {
+                  "type": "color-text"
+                }
+              },
+              {
+                "id": "mappings",
+                "value": [
+                  {
+                    "type": "value",
+                    "options": {
+                      "true": {
+                        "color": "green",
+                        "index": 0,
+                        "text": "yes"
+                      },
+                      "false": {
+                        "color": "text",
+                        "index": 1,
+                        "text": "no"
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Archived"
+            },
+            "properties": [
+              {
+                "id": "custom.cellOptions",
+                "value": {
+                  "type": "color-text"
+                }
+              },
+              {
+                "id": "mappings",
+                "value": [
+                  {
+                    "type": "value",
+                    "options": {
+                      "true": {
+                        "color": "text",
+                        "index": 0,
+                        "text": "yes"
+                      },
+                      "false": {
+                        "color": "text",
+                        "index": 1,
+                        "text": "no"
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Skips successful executions"
+            },
+            "properties": [
+              {
+                "id": "custom.cellOptions",
+                "value": {
+                  "type": "color-text"
+                }
+              },
+              {
+                "id": "mappings",
+                "value": [
+                  {
+                    "type": "value",
+                    "options": {
+                      "true": {
+                        "color": "orange",
+                        "index": 0,
+                        "text": "yes"
+                      },
+                      "false": {
+                        "color": "text",
+                        "index": 1,
+                        "text": "no"
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        ]
       },
       "options": {
         "showHeader": true,

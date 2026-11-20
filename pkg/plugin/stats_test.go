@@ -37,9 +37,21 @@ func TestBuckets(t *testing.T) {
 	require.Equal(t, 6, b.index(t0))
 	require.Equal(t, -1, b.index(t0.Add(-2*time.Hour)))
 
-	// Too fine intervals are widened to stay below maxBuckets.
-	b = newBuckets(backend.TimeRange{From: t0.Add(-30 * 24 * time.Hour), To: t0}, time.Second)
-	require.LessOrEqual(t, b.n, maxBuckets+1)
+	// Too fine intervals are widened to the next nice interval with at most maxBuckets buckets.
+	for _, c := range []struct {
+		span, interval, want time.Duration
+	}{
+		{12 * time.Hour, 30 * time.Second, 5 * time.Minute}, // Explore: one bucket per pixel
+		{24 * time.Hour, time.Minute, 10 * time.Minute},
+		{7 * 24 * time.Hour, time.Minute, 2 * time.Hour},
+		{2 * time.Hour, time.Minute, time.Minute},            // fine enough already
+		{24 * time.Hour, 15 * time.Minute, 15 * time.Minute}, // dashboard panels (maxDataPoints 100)
+		{365 * 24 * time.Hour, time.Second, 96 * time.Hour},  // beyond the largest nice interval
+	} {
+		b = newBuckets(backend.TimeRange{From: t0.Add(-c.span), To: t0}, c.interval)
+		require.Equal(t, c.want, b.interval, "span %v, interval %v", c.span, c.interval)
+		require.LessOrEqual(t, b.n, maxBuckets+1)
+	}
 }
 
 func statsInput() ([]n8n.Execution, backend.TimeRange) {
@@ -89,8 +101,10 @@ func TestStatsCountByStatus(t *testing.T) {
 	require.Len(t, frames, 2)
 	byStatus := map[string]float64{}
 	for _, f := range frames {
-		byStatus[f.Fields[1].Labels["status"]] = sum(floatValues(t, f))
+		status := f.Fields[1].Labels["status"]
+		byStatus[status] = sum(floatValues(t, f))
 		require.Equal(t, "short", f.Fields[1].Config.Unit)
+		require.Equal(t, map[string]any{"mode": "fixed", "fixedColor": statusColors[status]}, f.Fields[1].Config.Color)
 	}
 	require.Equal(t, map[string]float64{"error": 15, "success": 45}, byStatus)
 }

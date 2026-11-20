@@ -1,7 +1,8 @@
 # n8n data source for Grafana – development
 
 Grafana data source plugin (`nluecke-n8n-datasource`, Go backend) for n8n Cloud and self-hosted n8n via
-the n8n public API. User documentation: [src/README.md](src/README.md) (shown in the plugin catalog).
+the n8n public API. User documentation: [src/README.md](src/README.md) (overview shown in the plugin catalog) and
+[docs/guide](docs/guide) (configuration, query types, troubleshooting, limitations).
 
 ## Repository layout
 
@@ -14,6 +15,7 @@ the n8n public API. User documentation: [src/README.md](src/README.md) (shown in
 | `provisioning`                    | Datasources and dashboards for the dev stack                                                                          |
 | `scripts/dev`                     | Bootstrap of a fresh n8n, dashboard generator                                                                         |
 | `scripts/probe`, `seed/workflows` | API probes and seed workflows from the feasibility spike                                                              |
+| `docs/guide`                      | User guide linked from the catalog page                                                                               |
 | `docs`                            | PoC findings, dsconfig feedback, publishing checklist, n8n OpenAPI specs                                              |
 
 ## Prerequisites
