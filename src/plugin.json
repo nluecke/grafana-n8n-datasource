@@ -34,6 +34,10 @@
         "path": "img/screenshot-dashboard.png"
       },
       {
+        "name": "Recent failures and long-term trends from n8n Insights",
+        "path": "img/screenshot-longterm.png"
+      },
+      {
         "name": "Data source configuration",
         "path": "img/screenshot-config.png"
       }
